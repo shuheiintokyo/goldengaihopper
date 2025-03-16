@@ -36,6 +36,7 @@
 		05CB03302D85B8AB00B53437 /* golden-gai-json-data.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "golden-gai-json-data.json"; sourceTree = "<group>"; };
 		05CB03722D85C3C800B53437 /* Bar+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bar+CoreDataClass.swift"; sourceTree = "<group>"; };
 		05CB03732D85C3C800B53437 /* Bar+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bar+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		05CB03BF2D8676B200B53437 /* GoldenPeace.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = GoldenPeace.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -88,6 +89,13 @@
 				05CB02FA2D85B73A00B53437 /* GoldenPeace.app */,
 				05CB030F2D85B73C00B53437 /* GoldenPeaceTests.xctest */,
 				05CB03192D85B73C00B53437 /* GoldenPeaceUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		05CB03C22D8676B200B53437 /* Products */ = {
+			isa = PBXGroup;
+			children = (
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -192,6 +200,12 @@
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 05CB02FB2D85B73A00B53437 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 05CB03C22D8676B200B53437 /* Products */;
+					ProjectRef = 05CB03BF2D8676B200B53437 /* GoldenPeace.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				05CB02F92D85B73A00B53437 /* GoldenPeace */,
