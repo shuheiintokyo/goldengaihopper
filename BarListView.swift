@@ -10,7 +10,6 @@ struct BarListView: View {
     
     @State private var showingVisitedOnly = false
     @State private var selectedBar: Bar?
-    @State private var showingBarDetail = false
     
     var body: some View {
         NavigationView {
@@ -21,27 +20,34 @@ struct BarListView: View {
                 ForEach(filteredBars, id: \.uuid) { bar in
                     Button(action: {
                         selectedBar = bar
-                        showingBarDetail = true
                     }) {
                         HStack {
                             Text(bar.name ?? "Unknown")
+                                .font(.body)
+                            
                             Spacer()
+                            
                             if bar.isVisited {
                                 Image(systemName: "checkmark.circle.fill")
                                     .foregroundColor(.green)
+                                    .padding(.trailing, 4)
                             }
+                            
                             Image(systemName: "chevron.right")
                                 .foregroundColor(.gray)
+                                .font(.caption)
                         }
+                        .padding(.vertical, 4)
                     }
                     .foregroundColor(.primary)
                 }
             }
+            .listStyle(InsetGroupedListStyle())
             .navigationTitle("Golden Gai Bars")
-            .sheet(isPresented: $showingBarDetail) {
-                if let selectedBar = selectedBar {
-                    BarDetailView(bar: selectedBar)
-                }
+        }
+        .sheet(item: $selectedBar) { bar in
+            NavigationView {
+                BarDetailView(bar: bar)
             }
         }
     }

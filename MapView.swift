@@ -9,7 +9,7 @@ struct MapView: View {
     private var bars: FetchedResults<Bar>
     
     @State private var selectedBar: Bar?
-    @State private var showingBarDetail = false
+    @State private var highlightedBarUUID: String?
     
     // Fixed cell size for the grid
     private let cellSize: CGFloat = 80
@@ -31,11 +31,21 @@ struct MapView: View {
                 }
             }
             .navigationTitle("Golden Gai Map")
-            .sheet(isPresented: $showingBarDetail, content: {
-                if let selectedBar = selectedBar {
-                    BarDetailView(bar: selectedBar)
+        }
+        .sheet(item: $selectedBar) { bar in
+            NavigationView {
+                BarDetailView(bar: bar)
+            }
+        }
+        .onAppear {
+            // Listen for notifications to highlight bars
+            NotificationCenter.default.addObserver(forName: NSNotification.Name("HighlightBar"),
+                                                  object: nil,
+                                                  queue: .main) { notification in
+                if let uuid = notification.userInfo?["barUUID"] as? String {
+                    self.highlightedBarUUID = uuid
                 }
-            })
+            }
         }
     }
     
@@ -59,7 +69,6 @@ struct MapView: View {
         .onTapGesture {
             if let bar = bar {
                 self.selectedBar = bar
-                self.showingBarDetail = true
             }
         }
     }
@@ -67,12 +76,12 @@ struct MapView: View {
     private func cellBackgroundColor(for bar: Bar?) -> Color {
         guard let bar = bar else { return Color.white }
         
-        if bar.isVisited {
-            return Color.green.opacity(0.3)
+        if bar.uuid == highlightedBarUUID {
+            return Color.blue.opacity(0.5)
         }
         
-        if bar == selectedBar {
-            return Color.blue.opacity(0.3)
+        if bar.isVisited {
+            return Color.green.opacity(0.3)
         }
         
         return Color.gray.opacity(0.1)
