@@ -11,6 +11,15 @@
 		05CB03742D85C3C800B53437 /* Bar+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CB03722D85C3C800B53437 /* Bar+CoreDataClass.swift */; };
 		05CB03752D85C3C800B53437 /* Bar+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CB03732D85C3C800B53437 /* Bar+CoreDataProperties.swift */; };
 		05CB04202D867B7300B53437 /* .gitignore  in Resources */ = {isa = PBXBuildFile; fileRef = 05CB03FD2D867B7300B53437 /* .gitignore  */; };
+		05CB04592D868EFF00B53437 /* BarDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CB044E2D868EFF00B53437 /* BarDetailView.swift */; };
+		05CB045A2D868EFF00B53437 /* BarListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CB044F2D868EFF00B53437 /* BarListView.swift */; };
+		05CB045B2D868EFF00B53437 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CB04502D868EFF00B53437 /* ContentView.swift */; };
+		05CB045C2D868EFF00B53437 /* DataImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CB04512D868EFF00B53437 /* DataImportService.swift */; };
+		05CB045D2D868EFF00B53437 /* GoldenPeace.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 05CB04522D868EFF00B53437 /* GoldenPeace.xcdatamodeld */; };
+		05CB045E2D868EFF00B53437 /* GoldenPeaceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CB04532D868EFF00B53437 /* GoldenPeaceApp.swift */; };
+		05CB045F2D868EFF00B53437 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CB04542D868EFF00B53437 /* MapView.swift */; };
+		05CB04602D868EFF00B53437 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CB04552D868EFF00B53437 /* PersistenceController.swift */; };
+		05CB04612D868EFF00B53437 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 05CB044D2D868EFF00B53437 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,22 +40,23 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		05CB02FA2D85B73A00B53437 /* GoldenPeace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = GoldenPeace.app; path = "/Users/shuheikinugasa/Desktop/goldenpeace/build/Debug-iphoneos/GoldenPeace.app"; sourceTree = "<absolute>"; };
-		05CB030F2D85B73C00B53437 /* GoldenPeaceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = GoldenPeaceTests.xctest; path = "/Users/shuheikinugasa/Desktop/goldenpeace/build/Debug-iphoneos/GoldenPeace.app/PlugIns/GoldenPeaceTests.xctest"; sourceTree = "<absolute>"; };
-		05CB03192D85B73C00B53437 /* GoldenPeaceUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = GoldenPeaceUITests.xctest; path = "/Users/shuheikinugasa/Desktop/goldenpeace/build/Debug-iphoneos/GoldenPeaceUITests-Runner.app/PlugIns/GoldenPeaceUITests.xctest"; sourceTree = "<absolute>"; };
 		05CB03302D85B8AB00B53437 /* golden-gai-json-data.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "golden-gai-json-data.json"; sourceTree = "<group>"; };
 		05CB03722D85C3C800B53437 /* Bar+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bar+CoreDataClass.swift"; sourceTree = "<group>"; };
 		05CB03732D85C3C800B53437 /* Bar+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bar+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		05CB03FD2D867B7300B53437 /* .gitignore  */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".gitignore "; sourceTree = "<group>"; };
+		05CB04482D868EFF00B53437 /* GoldenPeaceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = GoldenPeaceTests.xctest; path = "/Users/shuheikinugasa/Desktop/goldenpeace/build/Debug-iphoneos/GoldenPeace.app/PlugIns/GoldenPeaceTests.xctest"; sourceTree = "<absolute>"; };
+		05CB04492D868EFF00B53437 /* GoldenPeaceUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = GoldenPeaceUITests.xctest; path = "/Users/shuheikinugasa/Desktop/goldenpeace/build/Debug-iphoneos/GoldenPeaceUITests-Runner.app/PlugIns/GoldenPeaceUITests.xctest"; sourceTree = "<absolute>"; };
+		05CB044D2D868EFF00B53437 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		05CB044E2D868EFF00B53437 /* BarDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarDetailView.swift; sourceTree = "<group>"; };
+		05CB044F2D868EFF00B53437 /* BarListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarListView.swift; sourceTree = "<group>"; };
+		05CB04502D868EFF00B53437 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		05CB04512D868EFF00B53437 /* DataImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataImportService.swift; sourceTree = "<group>"; };
+		05CB04532D868EFF00B53437 /* GoldenPeaceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoldenPeaceApp.swift; sourceTree = "<group>"; };
+		05CB04542D868EFF00B53437 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		05CB04552D868EFF00B53437 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
+		05CB04572D868EFF00B53437 /* GoldenPeace.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = GoldenPeace.xcdatamodel; sourceTree = "<group>"; };
+		05CB04662D869AD300B53437 /* GoldenPeace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoldenPeace.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		05CB02FC2D85B73A00B53437 /* GoldenPeace */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = GoldenPeace;
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		05CB02F72D85B73A00B53437 /* Frameworks */ = {
@@ -79,8 +89,17 @@
 				05CB03722D85C3C800B53437 /* Bar+CoreDataClass.swift */,
 				05CB03732D85C3C800B53437 /* Bar+CoreDataProperties.swift */,
 				05CB03302D85B8AB00B53437 /* golden-gai-json-data.json */,
-				05CB02FC2D85B73A00B53437 /* GoldenPeace */,
 				05CB03FD2D867B7300B53437 /* .gitignore  */,
+				05CB044D2D868EFF00B53437 /* Assets.xcassets */,
+				05CB044E2D868EFF00B53437 /* BarDetailView.swift */,
+				05CB044F2D868EFF00B53437 /* BarListView.swift */,
+				05CB04502D868EFF00B53437 /* ContentView.swift */,
+				05CB04512D868EFF00B53437 /* DataImportService.swift */,
+				05CB04522D868EFF00B53437 /* GoldenPeace.xcdatamodeld */,
+				05CB04532D868EFF00B53437 /* GoldenPeaceApp.swift */,
+				05CB04542D868EFF00B53437 /* MapView.swift */,
+				05CB04552D868EFF00B53437 /* PersistenceController.swift */,
+				05CB04662D869AD300B53437 /* GoldenPeace.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -99,14 +118,11 @@
 			);
 			dependencies = (
 			);
-			fileSystemSynchronizedGroups = (
-				05CB02FC2D85B73A00B53437 /* GoldenPeace */,
-			);
 			name = GoldenPeace;
 			packageProductDependencies = (
 			);
 			productName = GoldenPeace;
-			productReference = 05CB02FA2D85B73A00B53437 /* GoldenPeace.app */;
+			productReference = 05CB04662D869AD300B53437 /* GoldenPeace.app */;
 			productType = "com.apple.product-type.application";
 		};
 		05CB030E2D85B73C00B53437 /* GoldenPeaceTests */ = {
@@ -126,7 +142,7 @@
 			packageProductDependencies = (
 			);
 			productName = GoldenPeaceTests;
-			productReference = 05CB030F2D85B73C00B53437 /* GoldenPeaceTests.xctest */;
+			productReference = 05CB04482D868EFF00B53437 /* GoldenPeaceTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		05CB03182D85B73C00B53437 /* GoldenPeaceUITests */ = {
@@ -146,7 +162,7 @@
 			packageProductDependencies = (
 			);
 			productName = GoldenPeaceUITests;
-			productReference = 05CB03192D85B73C00B53437 /* GoldenPeaceUITests.xctest */;
+			productReference = 05CB04492D868EFF00B53437 /* GoldenPeaceUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -199,6 +215,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				05CB04202D867B7300B53437 /* .gitignore  in Resources */,
+				05CB04612D868EFF00B53437 /* Assets.xcassets in Resources */,
 				05CB03312D85B8AB00B53437 /* golden-gai-json-data.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -226,6 +243,14 @@
 			files = (
 				05CB03742D85C3C800B53437 /* Bar+CoreDataClass.swift in Sources */,
 				05CB03752D85C3C800B53437 /* Bar+CoreDataProperties.swift in Sources */,
+				05CB04592D868EFF00B53437 /* BarDetailView.swift in Sources */,
+				05CB045A2D868EFF00B53437 /* BarListView.swift in Sources */,
+				05CB045B2D868EFF00B53437 /* ContentView.swift in Sources */,
+				05CB045C2D868EFF00B53437 /* DataImportService.swift in Sources */,
+				05CB045D2D868EFF00B53437 /* GoldenPeace.xcdatamodeld in Sources */,
+				05CB045E2D868EFF00B53437 /* GoldenPeaceApp.swift in Sources */,
+				05CB045F2D868EFF00B53437 /* MapView.swift in Sources */,
+				05CB04602D868EFF00B53437 /* PersistenceController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -383,6 +408,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				ASSETCATALOG_WARNINGS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
@@ -412,6 +439,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				ASSETCATALOG_WARNINGS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
@@ -548,6 +577,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		05CB04522D868EFF00B53437 /* GoldenPeace.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				05CB04572D868EFF00B53437 /* GoldenPeace.xcdatamodel */,
+			);
+			currentVersion = 05CB04572D868EFF00B53437 /* GoldenPeace.xcdatamodel */;
+			path = GoldenPeace.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 05CB02F22D85B73A00B53437 /* Project object */;
 }

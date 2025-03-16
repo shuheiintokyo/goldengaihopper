@@ -2,32 +2,6 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var selection = 0
-    
-    var body: some View {
-        TabView(selection: $selection) {
-            HomeView()
-                .tabItem {
-                    Label("Home", systemImage: "house.fill")
-                }
-                .tag(0)
-            
-            BarListView()
-                .tabItem {
-                    Label("List", systemImage: "list.bullet")
-                }
-                .tag(1)
-            
-            MapView()
-                .tabItem {
-                    Label("Map", systemImage: "map")
-                }
-                .tag(2)
-        }
-    }
-}
-
-// New HomeView for the horizontal scrolling bar view
-struct HomeView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Bar.name, ascending: true)],
@@ -38,34 +12,50 @@ struct HomeView: View {
     @State private var showingBarDetail = false
     
     var body: some View {
-        NavigationView {
+        TabView(selection: $selection) {
+            // Home tab with horizontal scrolling
             VStack {
-                // Title header
-                Text("Golden Gai")
+                Text("Golden Peace")
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .padding(.top)
                 
-                // Main scrollable content - fullscreen width
                 ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHGrid(rows: [GridItem(.adaptive(minimum: 300))], spacing: 10) {
+                    HStack(spacing: 20) {
                         ForEach(bars, id: \.uuid) { bar in
                             barCell(for: bar)
-                                .frame(width: UIScreen.main.bounds.width - 40)
+                                .frame(width: UIScreen.main.bounds.width - 80)
+                                .frame(height: 450)
                         }
                     }
-                    .padding()
+                    .padding(.horizontal)
                 }
-                .frame(height: 350)
                 
                 Spacer()
             }
-            .navigationBarHidden(true)
             .sheet(isPresented: $showingBarDetail) {
                 if let selectedBar = selectedBar {
                     BarDetailView(bar: selectedBar)
                 }
             }
+            .tabItem {
+                Label("Home", systemImage: "house.fill")
+            }
+            .tag(0)
+            
+            // Map tab
+            MapView()
+                .tabItem {
+                    Label("Map", systemImage: "map")
+                }
+                .tag(1)
+            
+            // List tab
+            BarListView()
+                .tabItem {
+                    Label("List", systemImage: "list.bullet")
+                }
+                .tag(2)
         }
     }
     
@@ -75,17 +65,18 @@ struct HomeView: View {
             showingBarDetail = true
         }) {
             VStack {
-                // Square cell but bigger to fill most of the screen
                 ZStack {
                     Rectangle()
                         .fill(bar.isVisited ? Color.green.opacity(0.2) : Color.gray.opacity(0.1))
                         .cornerRadius(12)
-                        
-                    VStack(spacing: 16) {
+                    
+                    VStack(alignment: .center) {
                         Text(bar.name ?? "Unknown")
-                            .font(.title)
+                            .font(.title2)
                             .bold()
-                            .padding(.top)
+                            .padding(.top, 16)
+                        
+                        Spacer()
                         
                         if bar.isVisited {
                             HStack {
@@ -94,17 +85,10 @@ struct HomeView: View {
                                 Text("Visited")
                                     .foregroundColor(.green)
                             }
+                            .padding(.bottom, 16)
                         }
-                        
-                        Spacer()
-                        
-                        Text("Tap for details")
-                            .font(.caption)
-                            .padding(.bottom)
                     }
-                    .padding()
                 }
-                .frame(height: 300)
             }
         }
         .buttonStyle(PlainButtonStyle())
