@@ -18,10 +18,10 @@ struct MapView: View {
         NavigationView {
             ScrollView([.horizontal, .vertical], showsIndicators: true) {
                 VStack(spacing: 0) {
-                    // Create rows for the grid
-                    ForEach(0..<39) { row in
+                    // Update the number of rows from 39 to 37
+                    ForEach(0..<37) { row in
                         HStack(spacing: 0) {
-                            // Create columns for each row
+                            // Column count remains the same at 21
                             ForEach(0..<21) { column in
                                 cellView(for: row, column: column)
                                     .frame(width: cellSize, height: cellSize)
