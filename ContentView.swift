@@ -89,6 +89,7 @@ struct ContentView: View {
                     selection = 2
                 }
             }
+            loadInitialData()
         }
     }
     
@@ -152,5 +153,11 @@ struct ContentView: View {
             }
         }
         .buttonStyle(PlainButtonStyle())
+    }
+    
+    private func loadInitialData() {
+        let persistenceController = PersistenceController.shared
+        let dataImportService = DataImportService(persistenceController: persistenceController)
+        dataImportService.importInitialData()
     }
 }

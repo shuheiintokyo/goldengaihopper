@@ -19,7 +19,7 @@ struct MapView: View {
             ScrollView([.horizontal, .vertical], showsIndicators: true) {
                 VStack(spacing: 0) {
                     // Update the number of rows from 39 to 37
-                    ForEach(0..<37) { row in
+                    ForEach(0..<42) { row in
                         HStack(spacing: 0) {
                             // Column count remains the same at 21
                             ForEach(0..<21) { column in
