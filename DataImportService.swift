@@ -9,26 +9,26 @@ class DataImportService {
     }
     
     func importInitialData() {
-        // Check if data already exists
-        let fetchRequest: NSFetchRequest<Bar> = Bar.fetchRequest()
-        let count = try? persistenceController.container.viewContext.count(for: fetchRequest)
-        
-        if count == 0 {
-            // No data exists, import from JSON
-            if let url = Bundle.main.url(forResource: "golden-gai-json-data", withExtension: "json") {
-                do {
-                    let data = try Data(contentsOf: url)
-                    let decoder = JSONDecoder()
-                    let jsonData = try decoder.decode(GoldenGaiData.self, from: data)
-                    
-                    // Import the map data
-                    importBars(from: jsonData.map)
-                    
-                    // Save context
-                    try persistenceController.container.viewContext.save()
-                } catch {
-                    print("Error importing data: \(error)")
-                }
+        // Import from JSON regardless of existing data
+        if let url = Bundle.main.url(forResource: "golden-gai-json-data", withExtension: "json") {
+            do {
+                // First, delete all existing bars
+                let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Bar.fetchRequest()
+                let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+                try persistenceController.container.viewContext.execute(deleteRequest)
+                
+                // Then import fresh data
+                let data = try Data(contentsOf: url)
+                let decoder = JSONDecoder()
+                let jsonData = try decoder.decode(GoldenGaiData.self, from: data)
+                
+                // Import the map data
+                importBars(from: jsonData.map)
+                
+                // Save context
+                try persistenceController.container.viewContext.save()
+            } catch {
+                print("Error importing data: \(error)")
             }
         }
     }
