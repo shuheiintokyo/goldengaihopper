@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		05542F022D8ECD6600E4BA8D /* BarCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05542F012D8ECD6100E4BA8D /* BarCardView.swift */; };
 		055549892D8D37AF0040C2E3 /* BarNameTranslation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055549882D8D37A80040C2E3 /* BarNameTranslation.swift */; };
 		05CB03312D85B8AB00B53437 /* golden-gai-json-data.json in Resources */ = {isa = PBXBuildFile; fileRef = 05CB03302D85B8AB00B53437 /* golden-gai-json-data.json */; };
 		05CB03742D85C3C800B53437 /* Bar+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CB03722D85C3C800B53437 /* Bar+CoreDataClass.swift */; };
@@ -41,6 +42,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		05542F012D8ECD6100E4BA8D /* BarCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarCardView.swift; sourceTree = "<group>"; };
 		055549862D8D2BB80040C2E3 /* GoldenPeaceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GoldenPeaceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		055549872D8D2BB80040C2E3 /* GoldenPeaceUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GoldenPeaceUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		055549882D8D37A80040C2E3 /* BarNameTranslation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarNameTranslation.swift; sourceTree = "<group>"; };
@@ -88,6 +90,7 @@
 		05CB02F12D85B73A00B53437 = {
 			isa = PBXGroup;
 			children = (
+				05542F012D8ECD6100E4BA8D /* BarCardView.swift */,
 				055549882D8D37A80040C2E3 /* BarNameTranslation.swift */,
 				05CB03722D85C3C800B53437 /* Bar+CoreDataClass.swift */,
 				05CB03732D85C3C800B53437 /* Bar+CoreDataProperties.swift */,
@@ -256,6 +259,7 @@
 				055549892D8D37AF0040C2E3 /* BarNameTranslation.swift in Sources */,
 				05CB045E2D868EFF00B53437 /* GoldenPeaceApp.swift in Sources */,
 				05CB045F2D868EFF00B53437 /* MapView.swift in Sources */,
+				05542F022D8ECD6600E4BA8D /* BarCardView.swift in Sources */,
 				05CB04602D868EFF00B53437 /* PersistenceController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

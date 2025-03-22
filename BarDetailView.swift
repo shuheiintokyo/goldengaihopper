@@ -10,6 +10,11 @@ struct BarDetailView: View {
     @State private var selectedItem: PhotosPickerItem?
     @State private var barImage: UIImage?
     
+    // Add notification for image updates
+    private let imageUpdatedNotification = NotificationCenter.default.publisher(
+        for: NSNotification.Name("ImageUpdated")
+    )
+    
     init(bar: Bar) {
         self.bar = bar
         _notes = State(initialValue: bar.notes ?? "")
@@ -66,7 +71,21 @@ struct BarDetailView: View {
                                 await MainActor.run {
                                     barImage = image
                                     if let uuid = bar.uuid {
+                                        // Save image to disk
                                         ImageManager.saveImage(image, for: uuid)
+                                        
+                                        // Notify other views that image has been updated
+                                        NotificationCenter.default.post(
+                                            name: NSNotification.Name("ImageUpdated"),
+                                            object: nil,
+                                            userInfo: ["barUUID": uuid]
+                                        )
+                                        
+                                        // Update the bar object to trigger refresh
+                                        bar.objectWillChange.send()
+                                        
+                                        // Save context to ensure persistence
+                                        try? viewContext.save()
                                     }
                                 }
                             }
@@ -143,23 +162,6 @@ struct BarDetailView: View {
                     .cornerRadius(10)
                 }
                 .padding(.horizontal)
-                
-                // Location info if available
-                if bar.locationRow > 0 || bar.locationColumn > 0 {
-                    VStack(alignment: .leading) {
-                        Text("Location")
-                            .font(.headline)
-                        
-                        HStack {
-                            Text("Row: \(bar.locationRow), Column: \(bar.locationColumn)")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .padding(.horizontal)
-                }
-                
-                Spacer(minLength: 40)
             }
             .padding(.bottom, 30)
         }

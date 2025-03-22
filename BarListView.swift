@@ -41,6 +41,7 @@ struct BarListView: View {
                         .padding(.vertical, 4)
                     }
                     .foregroundColor(.primary)
+                    .listRowBackground(bar.isVisited ? Color.green.opacity(0.2) : Color.white)
                 }
             }
             .listStyle(InsetGroupedListStyle())

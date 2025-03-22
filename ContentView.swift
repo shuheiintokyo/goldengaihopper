@@ -9,64 +9,73 @@ struct ContentView: View {
     private var bars: FetchedResults<Bar>
     
     @State private var selectedBar: Bar?
-    
-    // Environment for responsive layout
-    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         TabView(selection: $selection) {
-            // Home tab with horizontal scrolling
-            VStack(spacing: 0) {
-                Text("Golden Gai Bars")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .padding(.top)
+            // Home tab with horizontal scrolling cards - balanced with larger leading spacer
+            ZStack {
+                // Background color
+                Color(UIColor.systemBackground)
+                    .ignoresSafeArea()
                 
-                GeometryReader { geometry in
+                VStack(spacing: 0) {
+                    // Title
+                    Text("Golden Gai Bars")
+                        .font(.system(size: 46, weight: .black))
+                        .foregroundColor(colorScheme == .dark ? .white : .black)
+                        .padding(.top, 30)
+                        .padding(.bottom, 20)
+                    
+                    // Scrolling cards with balanced height
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 16) {
-                            // Add leading spacer to center first item
-                            Spacer(minLength: 16)
+                        HStack(spacing: 25) {
+                            // IMPORTANT CHANGE: Add larger leading spacer to shift cards left
+                            Spacer(minLength: 5)  // Increased from 20 to 35
                             
+                            // Bar cards with more reasonable height
                             ForEach(bars, id: \.uuid) { bar in
-                                barCell(for: bar, width: geometry.size.width * 0.85)
-                                    .frame(width: geometry.size.width * 0.85)
-                                    // Increase height to use more vertical space
-                                    .frame(height: geometry.size.height * 0.9)
+                                BarCardView(bar: bar)
+                                    .frame(width: UIScreen.main.bounds.width * 0.85)
+                                    .frame(height: 480)
+                                    .onTapGesture {
+                                        selectedBar = bar
+                                    }
+                                    // Transition effects
                                     .scrollTransition { content, phase in
                                         content
-                                            .opacity(phase.isIdentity ? 1.0 : 0.5)
-                                            .scaleEffect(x: phase.isIdentity ? 1.0 : 0.8,
-                                                         y: phase.isIdentity ? 1.0 : 0.8)
-                                            .offset(y: phase.isIdentity ? 0 : 30)
+                                            .opacity(phase.isIdentity ? 1.0 : 0.6)
+                                            .scaleEffect(phase.isIdentity ? 1.0 : 0.9)
+                                            .offset(y: phase.isIdentity ? 0 : 15)
+                                            .blur(radius: phase.isIdentity ? 0 : 1)
                                     }
                             }
                             
-                            // Add trailing spacer to center last item
-                            Spacer(minLength: 16)
+                            // Keep regular trailing spacer
+                            Spacer(minLength: 20)
                         }
                         .scrollTargetLayout()
+                        .padding(.vertical, 10)
                     }
                     .scrollTargetBehavior(.viewAligned)
+                    .frame(height: UIScreen.main.bounds.height * 0.65)
+                    
+                    Spacer()
                 }
-                .frame(height: UIScreen.main.bounds.height * 0.7) // Increased height for more vertical space
-                
-                Spacer()
             }
-            .navigationViewStyle(StackNavigationViewStyle())
             .tabItem {
                 Label("Home", systemImage: "house.fill")
             }
             .tag(0)
             
-            // List tab (middle)
+            // List tab
             BarListView()
                 .tabItem {
                     Label("List", systemImage: "list.bullet")
                 }
                 .tag(1)
             
-            // Map tab (right)
+            // Map tab
             MapView()
                 .tabItem {
                     Label("Map", systemImage: "map")
@@ -79,92 +88,22 @@ struct ContentView: View {
             }
         }
         .onAppear {
-            // Listen for notifications to highlight bars on the map
-            NotificationCenter.default.addObserver(forName: NSNotification.Name("HighlightBar"),
-                                                  object: nil,
-                                                  queue: .main) { notification in
-                if let uuid = notification.userInfo?["barUUID"] as? String,
-                   bars.first(where: { $0.uuid == uuid }) != nil {
-                    // Switch to the map tab and highlight the bar
-                    selection = 2
-                }
-            }
-            // IMPORTANT: Remove this line to prevent duplicate data loading
-            // loadInitialData()
+            setupNotifications()
         }
     }
     
-    private func barCell(for bar: Bar, width: CGFloat) -> some View {
-        Button(action: {
-            selectedBar = bar
-        }) {
-            ZStack {
-                // Generate a unique color based on the bar name
-                let nameHash = (bar.name ?? "Unknown").hash
-                let backgroundColor = Color(
-                    red: 0.5 + Double((nameHash & 0xFF0000) >> 16) / 512.0,
-                    green: 0.5 + Double((nameHash & 0x00FF00) >> 8) / 512.0,
-                    blue: 0.5 + Double(nameHash & 0x0000FF) / 512.0
-                )
-                
-                // Use this color as the background for the entire card
-                Rectangle()
-                    .fill(bar.isVisited ?
-                          backgroundColor.opacity(0.6) :
-                          backgroundColor.opacity(0.3))
-                    .cornerRadius(16)
-                
-                VStack(spacing: 0) {
-                    Spacer(minLength: 20) // Top spacing
-                    
-                    // STANDARDIZED IMAGE SECTION
-                    // This ensures all placeholders look the same
-                    if let uuid = bar.uuid, let image = ImageManager.loadImage(for: uuid) {
-                        // Real image from storage
-                        Image(uiImage: image)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: width * 0.8, height: width * 0.6)
-                            .cornerRadius(12)
-                            .clipped()
-                    } else {
-                        // Standardized placeholder for all bars
-                        ZStack {
-                            Rectangle()
-                                .fill(backgroundColor)
-                                .frame(width: width * 0.8, height: width * 0.6)
-                                .cornerRadius(12)
-                            
-                            VStack(spacing: 8) {
-                                Image(systemName: "photo")
-                                    .font(.system(size: 40))
-                                    .foregroundColor(.white)
-                                
-                                // Only show the bar's name, not "Golden Peace"
-                                Text(bar.name ?? "Unknown")
-                                    .foregroundColor(.white)
-                                    .font(.headline)
-                            }
-                        }
-                    }
-                    
-                    Spacer(minLength: 20) // Middle spacing
-                    
-                    // Bar name
-                    Text(bar.name ?? "Unknown")
-                        .font(.title2)
-                        .bold()
-                        .foregroundColor(.white)
-                        .padding(.horizontal)
-                        .padding(.bottom, 16)
-                        .multilineTextAlignment(.center)
-                    
-                    // Just add consistent bottom spacing
-                    Spacer(minLength: 20)
-                }
-                .padding(.horizontal, 12)
+    // MARK: - Helper methods
+    
+    private func setupNotifications() {
+        NotificationCenter.default.addObserver(
+            forName: NSNotification.Name("HighlightBar"),
+            object: nil,
+            queue: .main
+        ) { notification in
+            if let uuid = notification.userInfo?["barUUID"] as? String,
+               bars.first(where: { $0.uuid == uuid }) != nil {
+                selection = 2
             }
         }
-        .buttonStyle(PlainButtonStyle())
     }
 }

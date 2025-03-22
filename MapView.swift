@@ -12,6 +12,10 @@ struct MapView: View {
     @State private var highlightedBarUUID: String?
     @State private var showEnglishNames: Bool = false  // Toggle for English/Japanese names
     
+    // Add scroll position tracking
+    @State private var scrollPosition: CGPoint = .zero
+    @State private var scrollViewSize: CGSize = .zero
+    
     // Fixed cell size for the grid
     private let cellSize: CGFloat = 80
     
@@ -33,18 +37,39 @@ struct MapView: View {
                 }
                 .padding(.top, 8)
                 
-                ScrollView([.horizontal, .vertical], showsIndicators: true) {
-                    VStack(spacing: 0) {
-                        // Update the number of rows from 39 to 42
-                        ForEach(0..<35) { row in
-                            HStack(spacing: 0) {
-                                // Column count remains the same at 21
-                                ForEach(0..<21) { column in
-                                    cellView(for: row, column: column)
-                                        .frame(width: cellSize, height: cellSize)
+                GeometryReader { geometry in
+                    ScrollView([.horizontal, .vertical], showsIndicators: true) {
+                        ScrollViewReader { scrollViewProxy in
+                            VStack(spacing: 0) {
+                                // Update the number of rows from 39 to 42
+                                ForEach(0..<35) { row in
+                                    HStack(spacing: 0) {
+                                        // Column count remains the same at 21
+                                        ForEach(0..<21) { column in
+                                            cellView(for: row, column: column)
+                                                .frame(width: cellSize, height: cellSize)
+                                                .id("\(row)-\(column)") // Add ID for ScrollViewReader
+                                        }
+                                    }
+                                }
+                            }
+                            .onChange(of: highlightedBarUUID) { oldValue, newValue in
+                                if let uuid = newValue,
+                                   let highlightedBar = bars.first(where: { $0.uuid == uuid }) {
+                                    
+                                    let row = Int(highlightedBar.locationRow)
+                                    let column = Int(highlightedBar.locationColumn)
+                                    
+                                    // Scroll to the highlighted cell with animation
+                                    withAnimation {
+                                        scrollViewProxy.scrollTo("\(row)-\(column)", anchor: .center)
+                                    }
                                 }
                             }
                         }
+                    }
+                    .onAppear {
+                        scrollViewSize = geometry.size
                     }
                 }
             }
@@ -108,17 +133,31 @@ struct MapView: View {
                 self.selectedBar = bar
             }
         }
+        .onLongPressGesture(minimumDuration: 3) {
+            if let bar = bar {
+                // Toggle visited status
+                bar.isVisited = !bar.isVisited
+                
+                // Save context
+                do {
+                    try viewContext.save()
+                } catch {
+                    print("Error saving visited status: \(error)")
+                }
+            }
+        }
     }
     
     private func cellBackgroundColor(for bar: Bar?) -> Color {
         guard let bar = bar else { return Color.white }
         
-        if bar.uuid == highlightedBarUUID {
-            return Color.blue.opacity(0.5)
-        }
-        
+        // Prioritize visited status over highlighted status
         if bar.isVisited {
             return Color.green.opacity(0.3)
+        }
+        
+        if bar.uuid == highlightedBarUUID {
+            return Color.blue.opacity(0.5)
         }
         
         return Color.gray.opacity(0.1)
