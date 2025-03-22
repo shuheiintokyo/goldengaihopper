@@ -36,18 +36,36 @@ class DataImportService {
     private func importBars(from mapData: [[String]]) {
         let context = persistenceController.container.viewContext
         
+        // First, delete all existing bars to start fresh
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Bar.fetchRequest()
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        try? context.execute(deleteRequest)
+        context.reset() // Reset context to ensure a clean state
+        
+        // Create a set to track unique bar names we've processed
+        var processedBarNames = Set<String>()
+        
+        // First pass: create a unique Bar entity for each unique name
         for (rowIndex, row) in mapData.enumerated() {
             for (colIndex, barName) in row.enumerated() {
-                if !barName.isEmpty {
+                if !barName.isEmpty && !processedBarNames.contains(barName) {
+                    // Create a new Bar entity only if we haven't seen this name before
                     let bar = Bar(context: context)
                     bar.uuid = UUID().uuidString
                     bar.name = barName
                     bar.isVisited = false
                     bar.locationRow = Int16(rowIndex)
                     bar.locationColumn = Int16(colIndex)
+                    
+                    // Mark this name as processed
+                    processedBarNames.insert(barName)
+                    print("Created bar: \(barName) at row \(rowIndex), col \(colIndex)")
                 }
             }
         }
+        
+        // Save the context to persist changes
+        try? context.save()
     }
 }
 

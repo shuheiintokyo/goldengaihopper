@@ -17,7 +17,7 @@ struct ContentView: View {
         TabView(selection: $selection) {
             // Home tab with horizontal scrolling
             VStack(spacing: 0) {
-                Text("Golden Peace")
+                Text("Golden Gai Bars")
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .padding(.top)
@@ -89,7 +89,8 @@ struct ContentView: View {
                     selection = 2
                 }
             }
-            loadInitialData()
+            // IMPORTANT: Remove this line to prevent duplicate data loading
+            // loadInitialData()
         }
     }
     
@@ -97,11 +98,11 @@ struct ContentView: View {
         Button(action: {
             selectedBar = bar
         }) {
-            ZStack(alignment: .bottom) {
+            ZStack {
                 // Generate a unique color based on the bar name
                 let nameHash = (bar.name ?? "Unknown").hash
                 let backgroundColor = Color(
-                    red: 0.5 + Double((nameHash & 0xFF0000) >> 16) / 512.0,  // Lighter color (0.5-1.0)
+                    red: 0.5 + Double((nameHash & 0xFF0000) >> 16) / 512.0,
                     green: 0.5 + Double((nameHash & 0x00FF00) >> 8) / 512.0,
                     blue: 0.5 + Double(nameHash & 0x0000FF) / 512.0
                 )
@@ -109,91 +110,61 @@ struct ContentView: View {
                 // Use this color as the background for the entire card
                 Rectangle()
                     .fill(bar.isVisited ?
-                          backgroundColor.opacity(0.6) :  // Visited bars get the color
-                          backgroundColor.opacity(0.3))   // Non-visited bars get a lighter version
+                          backgroundColor.opacity(0.6) :
+                          backgroundColor.opacity(0.3))
                     .cornerRadius(16)
                 
                 VStack(spacing: 0) {
-                    // Check if we have a saved image for this bar
+                    Spacer(minLength: 20) // Top spacing
+                    
+                    // STANDARDIZED IMAGE SECTION
+                    // This ensures all placeholders look the same
                     if let uuid = bar.uuid, let image = ImageManager.loadImage(for: uuid) {
+                        // Real image from storage
                         Image(uiImage: image)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                            // Make image take up most of the card space
-                            .frame(width: width - 24, height: width * 0.8)
+                            .frame(width: width * 0.8, height: width * 0.6)
                             .cornerRadius(12)
-                            .padding(.top, 12)
-                            .clipped()
-                    } else if let name = bar.name,
-                              let englishName = BarNameTranslation.nameMap[name],
-                              let image = UIImage(named: englishName.replacingOccurrences(of: " ", with: "_")) {
-                        // Try to load from assets using the English name with underscores
-                        Image(uiImage: image)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: width - 24, height: width * 0.8)
-                            .cornerRadius(12)
-                            .padding(.top, 12)
                             .clipped()
                     } else {
-                        // Colorful placeholder based on bar name (when no image is available)
-                        let nameHash = (bar.name ?? "Unknown").hash
-                        Rectangle()
-                            .fill(Color(
-                                red: Double((nameHash & 0xFF0000) >> 16) / 255.0,
-                                green: Double((nameHash & 0x00FF00) >> 8) / 255.0,
-                                blue: Double(nameHash & 0x0000FF) / 255.0
-                            ).opacity(0.8))
-                            .frame(width: width - 24, height: width * 0.5)
-                            .cornerRadius(12)
-                            .padding(.top, 12)
-                            .overlay(
-                                VStack {
-                                    Image(systemName: "photo")
-                                        .font(.system(size: 30))
-                                        .foregroundColor(.white)
-                                    
-                                    if let name = bar.name, let englishName = BarNameTranslation.nameMap[name] {
-                                        Text(englishName)
-                                            .foregroundColor(.white)
-                                            .font(.caption)
-                                            .padding(.top, 4)
-                                    }
-                                }
-                            )
+                        // Standardized placeholder for all bars
+                        ZStack {
+                            Rectangle()
+                                .fill(backgroundColor)
+                                .frame(width: width * 0.8, height: width * 0.6)
+                                .cornerRadius(12)
+                            
+                            VStack(spacing: 8) {
+                                Image(systemName: "photo")
+                                    .font(.system(size: 40))
+                                    .foregroundColor(.white)
+                                
+                                // Only show the bar's name, not "Golden Peace"
+                                Text(bar.name ?? "Unknown")
+                                    .foregroundColor(.white)
+                                    .font(.headline)
+                            }
+                        }
                     }
+                    
+                    Spacer(minLength: 20) // Middle spacing
                     
                     // Bar name
                     Text(bar.name ?? "Unknown")
                         .font(.title2)
                         .bold()
-                        .foregroundColor(.white)  // White text for better contrast
-                        .padding(.top, 8)
-                        .padding(.bottom, 12)
+                        .foregroundColor(.white)
+                        .padding(.horizontal)
+                        .padding(.bottom, 16)
                         .multilineTextAlignment(.center)
                     
-                    // Visit status indicator (only shows a dot, no text)
-                    if bar.isVisited {
-                        HStack {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.white)
-                                .font(.system(size: 22))
-                        }
-                        .padding(.bottom, 12)
-                    } else {
-                        Spacer()
-                            .frame(height: 12)
-                    }
+                    // Just add consistent bottom spacing
+                    Spacer(minLength: 20)
                 }
                 .padding(.horizontal, 12)
             }
         }
         .buttonStyle(PlainButtonStyle())
-    }
-    
-    private func loadInitialData() {
-        let persistenceController = PersistenceController.shared
-        let dataImportService = DataImportService(persistenceController: persistenceController)
-        dataImportService.importInitialData()
     }
 }
