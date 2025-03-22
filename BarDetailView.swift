@@ -209,3 +209,32 @@ class ImageManager {
         return UIImage(contentsOfFile: filename.path)
     }
 }
+
+extension ImageManager {
+    // Get image from assets based on bar name
+    static func getAssetImage(for barName: String?) -> UIImage? {
+        guard let barName = barName else { return nil }
+        
+        // Try to get image from English name first
+        if let englishName = BarNameTranslation.nameMap[barName],
+           let image = UIImage(named: englishName) {
+            return image
+        }
+        
+        // Fallback to the original name
+        return UIImage(named: barName)
+    }
+}
+
+extension BarDetailView {
+    // Function to get the appropriate image for the bar
+    func getBarImage() -> UIImage? {
+        // First try to get a saved image
+        if let uuid = bar.uuid, let savedImage = ImageManager.loadImage(for: uuid) {
+            return savedImage
+        }
+        
+        // Then try to get from assets using the name
+        return ImageManager.getAssetImage(for: bar.name)
+    }
+}

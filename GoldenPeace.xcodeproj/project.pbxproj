@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		055549892D8D37AF0040C2E3 /* BarNameTranslation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055549882D8D37A80040C2E3 /* BarNameTranslation.swift */; };
 		05CB03312D85B8AB00B53437 /* golden-gai-json-data.json in Resources */ = {isa = PBXBuildFile; fileRef = 05CB03302D85B8AB00B53437 /* golden-gai-json-data.json */; };
 		05CB03742D85C3C800B53437 /* Bar+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CB03722D85C3C800B53437 /* Bar+CoreDataClass.swift */; };
 		05CB03752D85C3C800B53437 /* Bar+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CB03732D85C3C800B53437 /* Bar+CoreDataProperties.swift */; };
@@ -40,12 +41,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		055549862D8D2BB80040C2E3 /* GoldenPeaceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GoldenPeaceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		055549872D8D2BB80040C2E3 /* GoldenPeaceUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GoldenPeaceUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		055549882D8D37A80040C2E3 /* BarNameTranslation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarNameTranslation.swift; sourceTree = "<group>"; };
 		05CB03302D85B8AB00B53437 /* golden-gai-json-data.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "golden-gai-json-data.json"; sourceTree = "<group>"; };
 		05CB03722D85C3C800B53437 /* Bar+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bar+CoreDataClass.swift"; sourceTree = "<group>"; };
 		05CB03732D85C3C800B53437 /* Bar+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bar+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		05CB03FD2D867B7300B53437 /* .gitignore  */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".gitignore "; sourceTree = "<group>"; };
-		05CB04482D868EFF00B53437 /* GoldenPeaceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = GoldenPeaceTests.xctest; path = "/Users/shuheikinugasa/Desktop/goldenpeace/build/Debug-iphoneos/GoldenPeace.app/PlugIns/GoldenPeaceTests.xctest"; sourceTree = "<absolute>"; };
-		05CB04492D868EFF00B53437 /* GoldenPeaceUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = GoldenPeaceUITests.xctest; path = "/Users/shuheikinugasa/Desktop/goldenpeace/build/Debug-iphoneos/GoldenPeaceUITests-Runner.app/PlugIns/GoldenPeaceUITests.xctest"; sourceTree = "<absolute>"; };
 		05CB044D2D868EFF00B53437 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		05CB044E2D868EFF00B53437 /* BarDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarDetailView.swift; sourceTree = "<group>"; };
 		05CB044F2D868EFF00B53437 /* BarListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarListView.swift; sourceTree = "<group>"; };
@@ -86,6 +88,7 @@
 		05CB02F12D85B73A00B53437 = {
 			isa = PBXGroup;
 			children = (
+				055549882D8D37A80040C2E3 /* BarNameTranslation.swift */,
 				05CB03722D85C3C800B53437 /* Bar+CoreDataClass.swift */,
 				05CB03732D85C3C800B53437 /* Bar+CoreDataProperties.swift */,
 				05CB03302D85B8AB00B53437 /* golden-gai-json-data.json */,
@@ -100,6 +103,8 @@
 				05CB04542D868EFF00B53437 /* MapView.swift */,
 				05CB04552D868EFF00B53437 /* PersistenceController.swift */,
 				05CB04662D869AD300B53437 /* GoldenPeace.app */,
+				055549862D8D2BB80040C2E3 /* GoldenPeaceTests.xctest */,
+				055549872D8D2BB80040C2E3 /* GoldenPeaceUITests.xctest */,
 			);
 			sourceTree = "<group>";
 		};
@@ -142,7 +147,7 @@
 			packageProductDependencies = (
 			);
 			productName = GoldenPeaceTests;
-			productReference = 05CB04482D868EFF00B53437 /* GoldenPeaceTests.xctest */;
+			productReference = 055549862D8D2BB80040C2E3 /* GoldenPeaceTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		05CB03182D85B73C00B53437 /* GoldenPeaceUITests */ = {
@@ -162,7 +167,7 @@
 			packageProductDependencies = (
 			);
 			productName = GoldenPeaceUITests;
-			productReference = 05CB04492D868EFF00B53437 /* GoldenPeaceUITests.xctest */;
+			productReference = 055549872D8D2BB80040C2E3 /* GoldenPeaceUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -248,6 +253,7 @@
 				05CB045B2D868EFF00B53437 /* ContentView.swift in Sources */,
 				05CB045C2D868EFF00B53437 /* DataImportService.swift in Sources */,
 				05CB045D2D868EFF00B53437 /* GoldenPeace.xcdatamodeld in Sources */,
+				055549892D8D37AF0040C2E3 /* BarNameTranslation.swift in Sources */,
 				05CB045E2D868EFF00B53437 /* GoldenPeaceApp.swift in Sources */,
 				05CB045F2D868EFF00B53437 /* MapView.swift in Sources */,
 				05CB04602D868EFF00B53437 /* PersistenceController.swift in Sources */,
