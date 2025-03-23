@@ -9,7 +9,7 @@ struct BarNameTranslation {
         "あび庵": "Abi-An",
         
         // Row 1
-        "バーバスター": "Bar Buster",
+        "バーバスター": "BarBuster",
         "CREMASTER": "CREMASTER",
         "麺屋我論": "Menya Garon",
         
