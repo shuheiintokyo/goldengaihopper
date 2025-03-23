@@ -5,6 +5,7 @@ import CoreData
 struct GoldenPeaceApp: App {
     let persistenceController = PersistenceController.shared
     let dataImportService: DataImportService
+    @AppStorage("isLoggedIn") var isLoggedIn = false
     
     init() {
         dataImportService = DataImportService(persistenceController: persistenceController)
@@ -14,8 +15,12 @@ struct GoldenPeaceApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            if isLoggedIn {
+                ContentView()
+                    .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            } else {
+                LoginView()
+            }
         }
     }
 }

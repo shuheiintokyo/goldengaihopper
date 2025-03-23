@@ -10,10 +10,12 @@ struct ContentView: View {
     
     @State private var selectedBar: Bar?
     @Environment(\.colorScheme) private var colorScheme
+    @AppStorage("showEnglish") var showEnglish = false
+    @AppStorage("isLoggedIn") var isLoggedIn = true
     
     var body: some View {
         TabView(selection: $selection) {
-            // Home tab with horizontal scrolling cards - balanced with larger leading spacer
+            // Home tab with horizontal scrolling cards
             ZStack {
                 // Background color
                 Color(UIColor.systemBackground)
@@ -21,7 +23,7 @@ struct ContentView: View {
                 
                 VStack(spacing: 0) {
                     // Title
-                    Text("Golden Gai Bars")
+                    Text(showEnglish ? "Golden Gai Bars" : "ゴールデン街バー")
                         .font(.system(size: 46, weight: .black))
                         .foregroundColor(colorScheme == .dark ? .white : .black)
                         .padding(.top, 30)
@@ -30,10 +32,8 @@ struct ContentView: View {
                     // Scrolling cards with balanced height
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 25) {
-                            // IMPORTANT CHANGE: Add larger leading spacer to shift cards left
-                            Spacer(minLength: 5)  // Increased from 20 to 35
+                            Spacer(minLength: 5)
                             
-                            // Bar cards with more reasonable height
                             ForEach(bars, id: \.uuid) { bar in
                                 BarCardView(bar: bar)
                                     .frame(width: UIScreen.main.bounds.width * 0.85)
@@ -41,7 +41,6 @@ struct ContentView: View {
                                     .onTapGesture {
                                         selectedBar = bar
                                     }
-                                    // Transition effects
                                     .scrollTransition { content, phase in
                                         content
                                             .opacity(phase.isIdentity ? 1.0 : 0.6)
@@ -51,7 +50,6 @@ struct ContentView: View {
                                     }
                             }
                             
-                            // Keep regular trailing spacer
                             Spacer(minLength: 20)
                         }
                         .scrollTargetLayout()
@@ -64,23 +62,48 @@ struct ContentView: View {
                 }
             }
             .tabItem {
-                Label("Home", systemImage: "house.fill")
+                Label(showEnglish ? "Home" : "ホーム", systemImage: "house.fill")
             }
             .tag(0)
             
             // List tab
             BarListView()
                 .tabItem {
-                    Label("List", systemImage: "list.bullet")
+                    Label(showEnglish ? "List" : "リスト", systemImage: "list.bullet")
                 }
                 .tag(1)
             
             // Map tab
             MapView()
                 .tabItem {
-                    Label("Map", systemImage: "map")
+                    Label(showEnglish ? "Map" : "マップ", systemImage: "map")
                 }
                 .tag(2)
+            
+            // Logout tab
+            VStack {
+                Spacer()
+                Text(showEnglish ? "Are you sure you want to log out?" : "ログアウトしますか？")
+                    .font(.headline)
+                    .padding()
+                
+                Button(action: {
+                    isLoggedIn = false
+                }) {
+                    Text(showEnglish ? "Log Out" : "ログアウト")
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.red)
+                        .cornerRadius(10)
+                }
+                .padding(.horizontal)
+                Spacer()
+            }
+            .tabItem {
+                Label(showEnglish ? "Logout" : "ログアウト", systemImage: "rectangle.portrait.and.arrow.right")
+            }
+            .tag(3)
         }
         .sheet(item: $selectedBar) { bar in
             NavigationView {

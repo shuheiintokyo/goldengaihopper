@@ -10,7 +10,7 @@ struct MapView: View {
     
     @State private var selectedBar: Bar?
     @State private var highlightedBarUUID: String?
-    @State private var showEnglishNames: Bool = false  // Toggle for English/Japanese names
+    @AppStorage("showEnglish") var showEnglish = false  // Use AppStorage instead of State
     
     // Add scroll position tracking
     @State private var scrollPosition: CGPoint = .zero
@@ -24,11 +24,11 @@ struct MapView: View {
             VStack {
                 // Language toggle button
                 Button(action: {
-                    showEnglishNames.toggle()
+                    showEnglish.toggle()
                 }) {
                     HStack {
                         Image(systemName: "globe")
-                        Text(showEnglishNames ? "Show Japanese" : "Show English")
+                        Text(showEnglish ? "Switch to Japanese" : "Switch to English")
                     }
                     .padding(8)
                     .background(Color.blue)
@@ -41,14 +41,12 @@ struct MapView: View {
                     ScrollView([.horizontal, .vertical], showsIndicators: true) {
                         ScrollViewReader { scrollViewProxy in
                             VStack(spacing: 0) {
-                                // Update the number of rows from 39 to 42
                                 ForEach(0..<35) { row in
                                     HStack(spacing: 0) {
-                                        // Column count remains the same at 21
                                         ForEach(0..<21) { column in
                                             cellView(for: row, column: column)
                                                 .frame(width: cellSize, height: cellSize)
-                                                .id("\(row)-\(column)") // Add ID for ScrollViewReader
+                                                .id("\(row)-\(column)")
                                         }
                                     }
                                 }
@@ -56,11 +54,8 @@ struct MapView: View {
                             .onChange(of: highlightedBarUUID) { oldValue, newValue in
                                 if let uuid = newValue,
                                    let highlightedBar = bars.first(where: { $0.uuid == uuid }) {
-                                    
                                     let row = Int(highlightedBar.locationRow)
                                     let column = Int(highlightedBar.locationColumn)
-                                    
-                                    // Scroll to the highlighted cell with animation
                                     withAnimation {
                                         scrollViewProxy.scrollTo("\(row)-\(column)", anchor: .center)
                                     }
@@ -73,7 +68,7 @@ struct MapView: View {
                     }
                 }
             }
-            .navigationTitle("Golden Gai Map")
+            .navigationTitle(showEnglish ? "Golden Gai Map" : "ゴールデン街マップ")
         }
         .sheet(item: $selectedBar) { bar in
             NavigationView {
@@ -81,14 +76,14 @@ struct MapView: View {
             }
         }
         .onAppear {
-            // Listen for notifications to highlight bars
-            NotificationCenter.default.addObserver(forName: NSNotification.Name("HighlightBar"),
-                                                  object: nil,
-                                                  queue: .main) { notification in
-                if let uuid = notification.userInfo?["barUUID"] as? String {
-                    self.highlightedBarUUID = uuid
+            NotificationCenter.default.addObserver(
+                forName: NSNotification.Name("HighlightBar"),
+                object: nil,
+                queue: .main) { notification in
+                    if let uuid = notification.userInfo?["barUUID"] as? String {
+                        self.highlightedBarUUID = uuid
+                    }
                 }
-            }
         }
     }
     
@@ -101,16 +96,14 @@ struct MapView: View {
                 .border(Color.gray.opacity(0.2), width: 0.5)
             
             if let bar = bar {
-                // Display cell with appropriate text based on language toggle
-                if showEnglishNames {
-                    // Black background with white text for English names
+                if showEnglish {
                     ZStack {
                         Rectangle()
                             .fill(Color.black)
                             .cornerRadius(4)
                             .padding(2)
                         
-                        Text(getEnglishName(for: bar.name ?? ""))
+                        Text(BarNameTranslation.nameMap[bar.name ?? ""] ?? bar.name ?? "")
                             .font(.system(size: 9))
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
@@ -118,7 +111,6 @@ struct MapView: View {
                             .padding(3)
                     }
                 } else {
-                    // Original display for Japanese names
                     Text(bar.name ?? "")
                         .font(.system(size: 10))
                         .multilineTextAlignment(.center)
@@ -135,15 +127,8 @@ struct MapView: View {
         }
         .onLongPressGesture(minimumDuration: 3) {
             if let bar = bar {
-                // Toggle visited status
                 bar.isVisited = !bar.isVisited
-                
-                // Save context
-                do {
-                    try viewContext.save()
-                } catch {
-                    print("Error saving visited status: \(error)")
-                }
+                try? viewContext.save()
             }
         }
     }
@@ -151,7 +136,6 @@ struct MapView: View {
     private func cellBackgroundColor(for bar: Bar?) -> Color {
         guard let bar = bar else { return Color.white }
         
-        // Prioritize visited status over highlighted status
         if bar.isVisited {
             return Color.green.opacity(0.3)
         }
@@ -165,10 +149,5 @@ struct MapView: View {
     
     private func findBar(at row: Int, column: Int) -> Bar? {
         bars.first { Int($0.locationRow) == row && Int($0.locationColumn) == column }
-    }
-    
-    // Function to get English name for a bar
-    private func getEnglishName(for japaneseName: String) -> String {
-        return BarNameTranslation.nameMap[japaneseName] ?? japaneseName
     }
 }

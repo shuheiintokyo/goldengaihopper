@@ -5,6 +5,7 @@ import PhotosUI
 struct BarDetailView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.presentationMode) var presentationMode
+    @AppStorage("showEnglish") var showEnglish = false
     @ObservedObject var bar: Bar
     @State private var notes: String
     @State private var selectedItem: PhotosPickerItem?
@@ -28,11 +29,19 @@ struct BarDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .center, spacing: 20) {
-                Text(bar.name ?? "Unknown Bar")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .padding(.top, 20)
-                    .multilineTextAlignment(.center)
+                if showEnglish {
+                    Text(BarNameTranslation.nameMap[bar.name ?? ""] ?? bar.name ?? "Unknown Bar")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .padding(.top, 20)
+                        .multilineTextAlignment(.center)
+                } else {
+                    Text(bar.name ?? "不明なバー")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .padding(.top, 20)
+                        .multilineTextAlignment(.center)
+                }
                 
                 // Image section
                 VStack {
@@ -57,7 +66,7 @@ struct BarDetailView: View {
                     
                     // Image picker
                     PhotosPicker(selection: $selectedItem, matching: .images) {
-                        Label(barImage == nil ? "Add Photo" : "Change Photo", systemImage: "photo")
+                        Label(showEnglish ? "Add Photo" : "写真を追加", systemImage: "photo")
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(Color.blue.opacity(0.8))
@@ -97,12 +106,12 @@ struct BarDetailView: View {
                 Divider()
                 
                 HStack {
-                    Text("Status:")
+                    Text(showEnglish ? "Status:" : "ステータス:")
                         .font(.headline)
                     
                     Spacer()
                     
-                    Text(bar.isVisited ? "Visited" : "Not Visited Yet")
+                    Text(bar.isVisited ? (showEnglish ? "Visited" : "訪問済み") : (showEnglish ? "Not Visited Yet" : "未訪問"))
                         .foregroundColor(bar.isVisited ? .green : .gray)
                         .fontWeight(.medium)
                 }
@@ -115,7 +124,7 @@ struct BarDetailView: View {
                         try? viewContext.save()
                     }
                 )) {
-                    Text("Mark as Visited")
+                    Text(showEnglish ? "Mark as Visited" : "訪問済みにする")
                         .font(.headline)
                 }
                 .padding(.horizontal)
@@ -125,7 +134,7 @@ struct BarDetailView: View {
                 }) {
                     HStack {
                         Image(systemName: "map")
-                        Text("Find in Map")
+                        Text(showEnglish ? "Find in Map" : "マップで探す")
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -136,7 +145,7 @@ struct BarDetailView: View {
                 .padding(.horizontal)
                 
                 VStack(alignment: .leading) {
-                    Text("Notes")
+                    Text(showEnglish ? "Notes" : "メモ")
                         .font(.headline)
                         .padding(.horizontal)
                     
@@ -153,7 +162,7 @@ struct BarDetailView: View {
                 }) {
                     HStack {
                         Image(systemName: "square.and.pencil")
-                        Text("Save Notes")
+                        Text(showEnglish ? "Save Notes" : "メモを保存")
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -165,11 +174,11 @@ struct BarDetailView: View {
             }
             .padding(.bottom, 30)
         }
-        .navigationBarTitle("Bar Details", displayMode: .inline)
+        .navigationBarTitle(showEnglish ? "Bar Details" : "バーの詳細", displayMode: .inline)
         .navigationBarItems(trailing: Button(action: {
             presentationMode.wrappedValue.dismiss()
         }) {
-            Text("Close")
+            Text(showEnglish ? "Close" : "閉じる")
                 .bold()
         })
     }

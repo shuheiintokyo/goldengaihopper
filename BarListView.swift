@@ -11,11 +11,12 @@ struct BarListView: View {
     @State private var showingVisitedOnly = false
     @State private var selectedBar: Bar?
     @State private var barNameCounts: [String: Int] = [:]
+    @AppStorage("showEnglish") var showEnglish = false
     
     var body: some View {
         NavigationView {
             List {
-                Toggle("Show Visited Only", isOn: $showingVisitedOnly)
+                Toggle(showEnglish ? "Show Visited Only" : "訪問済みのみ表示", isOn: $showingVisitedOnly)
                     .padding(.vertical, 8)
                 
                 ForEach(filteredBars, id: \.uuid) { bar in
@@ -23,8 +24,13 @@ struct BarListView: View {
                         selectedBar = bar
                     }) {
                         HStack {
-                            Text(bar.name ?? "Unknown")
-                                .font(.body)
+                            if showEnglish {
+                                Text(BarNameTranslation.nameMap[bar.name ?? ""] ?? bar.name ?? "Unknown")
+                                    .font(.body)
+                            } else {
+                                Text(bar.name ?? "不明")
+                                    .font(.body)
+                            }
                             
                             Spacer()
                             
@@ -45,7 +51,7 @@ struct BarListView: View {
                 }
             }
             .listStyle(InsetGroupedListStyle())
-            .navigationTitle("Golden Gai Bars")
+            .navigationTitle(showEnglish ? "Golden Gai Bars" : "ゴールデン街バー")
             .onAppear {
                 countBarNames()
                 validateBars()

@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		05542F022D8ECD6600E4BA8D /* BarCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05542F012D8ECD6100E4BA8D /* BarCardView.swift */; };
 		055549892D8D37AF0040C2E3 /* BarNameTranslation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055549882D8D37A80040C2E3 /* BarNameTranslation.swift */; };
+		057DE7322D90243600867B88 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057DE72F2D90243600867B88 /* LoginView.swift */; };
+		057DE7342D902B5800867B88 /* Subject.png in Resources */ = {isa = PBXBuildFile; fileRef = 057DE7332D902B5800867B88 /* Subject.png */; };
 		05CB03312D85B8AB00B53437 /* golden-gai-json-data.json in Resources */ = {isa = PBXBuildFile; fileRef = 05CB03302D85B8AB00B53437 /* golden-gai-json-data.json */; };
 		05CB03742D85C3C800B53437 /* Bar+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CB03722D85C3C800B53437 /* Bar+CoreDataClass.swift */; };
 		05CB03752D85C3C800B53437 /* Bar+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CB03732D85C3C800B53437 /* Bar+CoreDataProperties.swift */; };
@@ -46,6 +48,8 @@
 		055549862D8D2BB80040C2E3 /* GoldenPeaceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GoldenPeaceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		055549872D8D2BB80040C2E3 /* GoldenPeaceUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GoldenPeaceUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		055549882D8D37A80040C2E3 /* BarNameTranslation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarNameTranslation.swift; sourceTree = "<group>"; };
+		057DE72F2D90243600867B88 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		057DE7332D902B5800867B88 /* Subject.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Subject.png; sourceTree = "<group>"; };
 		05CB03302D85B8AB00B53437 /* golden-gai-json-data.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "golden-gai-json-data.json"; sourceTree = "<group>"; };
 		05CB03722D85C3C800B53437 /* Bar+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bar+CoreDataClass.swift"; sourceTree = "<group>"; };
 		05CB03732D85C3C800B53437 /* Bar+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bar+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -92,6 +96,7 @@
 			children = (
 				05542F012D8ECD6100E4BA8D /* BarCardView.swift */,
 				055549882D8D37A80040C2E3 /* BarNameTranslation.swift */,
+				057DE72F2D90243600867B88 /* LoginView.swift */,
 				05CB03722D85C3C800B53437 /* Bar+CoreDataClass.swift */,
 				05CB03732D85C3C800B53437 /* Bar+CoreDataProperties.swift */,
 				05CB03302D85B8AB00B53437 /* golden-gai-json-data.json */,
@@ -108,6 +113,7 @@
 				05CB04662D869AD300B53437 /* GoldenPeace.app */,
 				055549862D8D2BB80040C2E3 /* GoldenPeaceTests.xctest */,
 				055549872D8D2BB80040C2E3 /* GoldenPeaceUITests.xctest */,
+				057DE7332D902B5800867B88 /* Subject.png */,
 			);
 			sourceTree = "<group>";
 		};
@@ -224,6 +230,7 @@
 			files = (
 				05CB04202D867B7300B53437 /* .gitignore  in Resources */,
 				05CB04612D868EFF00B53437 /* Assets.xcassets in Resources */,
+				057DE7342D902B5800867B88 /* Subject.png in Resources */,
 				05CB03312D85B8AB00B53437 /* golden-gai-json-data.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -254,6 +261,7 @@
 				05CB04592D868EFF00B53437 /* BarDetailView.swift in Sources */,
 				05CB045A2D868EFF00B53437 /* BarListView.swift in Sources */,
 				05CB045B2D868EFF00B53437 /* ContentView.swift in Sources */,
+				057DE7322D90243600867B88 /* LoginView.swift in Sources */,
 				05CB045C2D868EFF00B53437 /* DataImportService.swift in Sources */,
 				05CB045D2D868EFF00B53437 /* GoldenPeace.xcdatamodeld in Sources */,
 				055549892D8D37AF0040C2E3 /* BarNameTranslation.swift in Sources */,
