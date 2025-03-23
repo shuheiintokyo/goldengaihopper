@@ -18,6 +18,7 @@ struct BarListView: View {
             List {
                 Toggle(showEnglish ? "Show Visited Only" : "訪問済みのみ表示", isOn: $showingVisitedOnly)
                     .padding(.vertical, 8)
+                    .listRowBackground(Color.clear)
                 
                 ForEach(filteredBars, id: \.uuid) { bar in
                     Button(action: {
@@ -26,31 +27,34 @@ struct BarListView: View {
                         HStack {
                             if showEnglish {
                                 Text(BarNameTranslation.nameMap[bar.name ?? ""] ?? bar.name ?? "Unknown")
-                                    .font(.body)
+                                    .font(.system(size: 18, weight: .medium))
+                                    .frame(maxWidth: .infinity, alignment: .center)
                             } else {
                                 Text(bar.name ?? "不明")
-                                    .font(.body)
+                                    .font(.system(size: 18, weight: .medium))
+                                    .frame(maxWidth: .infinity, alignment: .center)
                             }
-                            
-                            Spacer()
                             
                             if bar.isVisited {
                                 Image(systemName: "checkmark.circle.fill")
                                     .foregroundColor(.green)
-                                    .padding(.trailing, 4)
                             }
                             
                             Image(systemName: "chevron.right")
                                 .foregroundColor(.gray)
-                                .font(.caption)
+                                .font(.system(size: 14))
                         }
-                        .padding(.vertical, 4)
+                        .padding(.vertical, 8)
                     }
-                    .foregroundColor(.primary)
-                    .listRowBackground(bar.isVisited ? Color.green.opacity(0.2) : Color.white)
+                    .listRowBackground(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(bar.isVisited ? Color.green.opacity(0.1) : Color.gray.opacity(0.05))
+                            .padding(.vertical, 4)
+                    )
                 }
+                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
             }
-            .listStyle(InsetGroupedListStyle())
+            .listStyle(PlainListStyle())
             .navigationTitle(showEnglish ? "Golden Gai Bars" : "ゴールデン街バー")
             .onAppear {
                 countBarNames()
@@ -73,10 +77,7 @@ struct BarListView: View {
     }
     
     private func countBarNames() {
-        // Reset counts
         barNameCounts = [:]
-        
-        // Count occurrences of each name
         for bar in bars {
             if let name = bar.name {
                 barNameCounts[name, default: 0] += 1
@@ -100,15 +101,12 @@ struct BarListView: View {
             } else {
                 nilUUIDCount += 1
                 print("Nil UUID found for bar: \(bar.name ?? "unknown")")
-                
-                // Attempt to fix bars with nil UUIDs
                 bar.uuid = UUID().uuidString
             }
         }
         
         if duplicateCount > 0 || nilUUIDCount > 0 {
             print("Found \(duplicateCount) bars with duplicate UUIDs and \(nilUUIDCount) bars with nil UUIDs")
-            // Save the context to persist any fixes
             try? viewContext.save()
         }
     }
