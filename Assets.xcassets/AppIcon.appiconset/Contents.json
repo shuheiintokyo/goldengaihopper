@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "iTunesArtwork@2x 1.png",
+      "filename" : "goldengaihopper_iconimage.jpeg",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -13,7 +13,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "iTunesArtwork@2x.png",
+      "filename" : "goldengaihopper_iconimage 1.jpeg",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -25,7 +25,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "iTunesArtwork@2x 2.png",
+      "filename" : "goldengaihopper_iconimage 2.jpeg",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"

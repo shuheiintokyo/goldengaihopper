@@ -45,8 +45,8 @@
 
 /* Begin PBXFileReference section */
 		05542F012D8ECD6100E4BA8D /* BarCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarCardView.swift; sourceTree = "<group>"; };
-		055549862D8D2BB80040C2E3 /* GoldenPeaceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GoldenPeaceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		055549872D8D2BB80040C2E3 /* GoldenPeaceUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GoldenPeaceUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		055549862D8D2BB80040C2E3 /* GoldenGaiHopperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GoldenGaiHopperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		055549872D8D2BB80040C2E3 /* GoldenGaiHopperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GoldenGaiHopperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		055549882D8D37A80040C2E3 /* BarNameTranslation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarNameTranslation.swift; sourceTree = "<group>"; };
 		057DE72F2D90243600867B88 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		057DE7332D902B5800867B88 /* Subject.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Subject.png; sourceTree = "<group>"; };
@@ -63,7 +63,7 @@
 		05CB04542D868EFF00B53437 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		05CB04552D868EFF00B53437 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		05CB04572D868EFF00B53437 /* GoldenPeace.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = GoldenPeace.xcdatamodel; sourceTree = "<group>"; };
-		05CB04662D869AD300B53437 /* GoldenPeace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoldenPeace.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		05CB04662D869AD300B53437 /* GoldenGaiHopper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoldenGaiHopper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,9 +110,9 @@
 				05CB04532D868EFF00B53437 /* GoldenPeaceApp.swift */,
 				05CB04542D868EFF00B53437 /* MapView.swift */,
 				05CB04552D868EFF00B53437 /* PersistenceController.swift */,
-				05CB04662D869AD300B53437 /* GoldenPeace.app */,
-				055549862D8D2BB80040C2E3 /* GoldenPeaceTests.xctest */,
-				055549872D8D2BB80040C2E3 /* GoldenPeaceUITests.xctest */,
+				05CB04662D869AD300B53437 /* GoldenGaiHopper.app */,
+				055549862D8D2BB80040C2E3 /* GoldenGaiHopperTests.xctest */,
+				055549872D8D2BB80040C2E3 /* GoldenGaiHopperUITests.xctest */,
 				057DE7332D902B5800867B88 /* Subject.png */,
 			);
 			sourceTree = "<group>";
@@ -120,9 +120,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		05CB02F92D85B73A00B53437 /* GoldenPeace */ = {
+		05CB02F92D85B73A00B53437 /* GoldenGaiHopper */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 05CB03232D85B73C00B53437 /* Build configuration list for PBXNativeTarget "GoldenPeace" */;
+			buildConfigurationList = 05CB03232D85B73C00B53437 /* Build configuration list for PBXNativeTarget "GoldenGaiHopper" */;
 			buildPhases = (
 				05CB02F62D85B73A00B53437 /* Sources */,
 				05CB02F72D85B73A00B53437 /* Frameworks */,
@@ -132,16 +132,16 @@
 			);
 			dependencies = (
 			);
-			name = GoldenPeace;
+			name = GoldenGaiHopper;
 			packageProductDependencies = (
 			);
 			productName = GoldenPeace;
-			productReference = 05CB04662D869AD300B53437 /* GoldenPeace.app */;
+			productReference = 05CB04662D869AD300B53437 /* GoldenGaiHopper.app */;
 			productType = "com.apple.product-type.application";
 		};
-		05CB030E2D85B73C00B53437 /* GoldenPeaceTests */ = {
+		05CB030E2D85B73C00B53437 /* GoldenGaiHopperTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 05CB03262D85B73C00B53437 /* Build configuration list for PBXNativeTarget "GoldenPeaceTests" */;
+			buildConfigurationList = 05CB03262D85B73C00B53437 /* Build configuration list for PBXNativeTarget "GoldenGaiHopperTests" */;
 			buildPhases = (
 				05CB030B2D85B73C00B53437 /* Sources */,
 				05CB030C2D85B73C00B53437 /* Frameworks */,
@@ -152,16 +152,16 @@
 			dependencies = (
 				05CB03112D85B73C00B53437 /* PBXTargetDependency */,
 			);
-			name = GoldenPeaceTests;
+			name = GoldenGaiHopperTests;
 			packageProductDependencies = (
 			);
 			productName = GoldenPeaceTests;
-			productReference = 055549862D8D2BB80040C2E3 /* GoldenPeaceTests.xctest */;
+			productReference = 055549862D8D2BB80040C2E3 /* GoldenGaiHopperTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		05CB03182D85B73C00B53437 /* GoldenPeaceUITests */ = {
+		05CB03182D85B73C00B53437 /* GoldenGaiHopperUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 05CB03292D85B73C00B53437 /* Build configuration list for PBXNativeTarget "GoldenPeaceUITests" */;
+			buildConfigurationList = 05CB03292D85B73C00B53437 /* Build configuration list for PBXNativeTarget "GoldenGaiHopperUITests" */;
 			buildPhases = (
 				05CB03152D85B73C00B53437 /* Sources */,
 				05CB03162D85B73C00B53437 /* Frameworks */,
@@ -172,11 +172,11 @@
 			dependencies = (
 				05CB031B2D85B73C00B53437 /* PBXTargetDependency */,
 			);
-			name = GoldenPeaceUITests;
+			name = GoldenGaiHopperUITests;
 			packageProductDependencies = (
 			);
 			productName = GoldenPeaceUITests;
-			productReference = 055549872D8D2BB80040C2E3 /* GoldenPeaceUITests.xctest */;
+			productReference = 055549872D8D2BB80040C2E3 /* GoldenGaiHopperUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -202,7 +202,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 05CB02F52D85B73A00B53437 /* Build configuration list for PBXProject "GoldenPeace" */;
+			buildConfigurationList = 05CB02F52D85B73A00B53437 /* Build configuration list for PBXProject "GoldenGaiHopper" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -216,9 +216,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				05CB02F92D85B73A00B53437 /* GoldenPeace */,
-				05CB030E2D85B73C00B53437 /* GoldenPeaceTests */,
-				05CB03182D85B73C00B53437 /* GoldenPeaceUITests */,
+				05CB02F92D85B73A00B53437 /* GoldenGaiHopper */,
+				05CB030E2D85B73C00B53437 /* GoldenGaiHopperTests */,
+				05CB03182D85B73C00B53437 /* GoldenGaiHopperUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -291,12 +291,12 @@
 /* Begin PBXTargetDependency section */
 		05CB03112D85B73C00B53437 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 05CB02F92D85B73A00B53437 /* GoldenPeace */;
+			target = 05CB02F92D85B73A00B53437 /* GoldenGaiHopper */;
 			targetProxy = 05CB03102D85B73C00B53437 /* PBXContainerItemProxy */;
 		};
 		05CB031B2D85B73C00B53437 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 05CB02F92D85B73A00B53437 /* GoldenPeace */;
+			target = 05CB02F92D85B73A00B53437 /* GoldenGaiHopper */;
 			targetProxy = 05CB031A2D85B73C00B53437 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -498,7 +498,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GoldenPeace.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/GoldenPeace";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GoldenGaiHopper.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/GoldenGaiHopper";
 			};
 			name = Debug;
 		};
@@ -517,7 +517,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GoldenPeace.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/GoldenPeace";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GoldenGaiHopper.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/GoldenGaiHopper";
 			};
 			name = Release;
 		};
@@ -558,7 +558,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		05CB02F52D85B73A00B53437 /* Build configuration list for PBXProject "GoldenPeace" */ = {
+		05CB02F52D85B73A00B53437 /* Build configuration list for PBXProject "GoldenGaiHopper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				05CB03212D85B73C00B53437 /* Debug */,
@@ -567,7 +567,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		05CB03232D85B73C00B53437 /* Build configuration list for PBXNativeTarget "GoldenPeace" */ = {
+		05CB03232D85B73C00B53437 /* Build configuration list for PBXNativeTarget "GoldenGaiHopper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				05CB03242D85B73C00B53437 /* Debug */,
@@ -576,7 +576,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		05CB03262D85B73C00B53437 /* Build configuration list for PBXNativeTarget "GoldenPeaceTests" */ = {
+		05CB03262D85B73C00B53437 /* Build configuration list for PBXNativeTarget "GoldenGaiHopperTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				05CB03272D85B73C00B53437 /* Debug */,
@@ -585,7 +585,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		05CB03292D85B73C00B53437 /* Build configuration list for PBXNativeTarget "GoldenPeaceUITests" */ = {
+		05CB03292D85B73C00B53437 /* Build configuration list for PBXNativeTarget "GoldenGaiHopperUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				05CB032A2D85B73C00B53437 /* Debug */,
