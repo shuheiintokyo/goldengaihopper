@@ -10,7 +10,7 @@ struct MapView: View {
     
     @State private var selectedBar: Bar?
     @State private var highlightedBarUUID: String?
-    @AppStorage("showEnglish") var showEnglish = false  // Use AppStorage instead of State
+    @AppStorage("showEnglish") var showEnglish = false
     
     // Add scroll position tracking
     @State private var scrollPosition: CGPoint = .zero
@@ -76,15 +76,19 @@ struct MapView: View {
             }
         }
         .onAppear {
-            NotificationCenter.default.addObserver(
-                forName: NSNotification.Name("HighlightBar"),
-                object: nil,
-                queue: .main) { notification in
-                    if let uuid = notification.userInfo?["barUUID"] as? String {
-                        self.highlightedBarUUID = uuid
-                    }
-                }
+            setupNotificationObserver()
         }
+    }
+    
+    private func setupNotificationObserver() {
+        NotificationCenter.default.addObserver(
+            forName: NSNotification.Name("HighlightBar"),
+            object: nil,
+            queue: .main) { notification in
+                if let uuid = notification.userInfo?["barUUID"] as? String {
+                    self.highlightedBarUUID = uuid
+                }
+            }
     }
     
     private func cellView(for row: Int, column: Int) -> some View {
@@ -99,13 +103,13 @@ struct MapView: View {
                 if showEnglish {
                     ZStack {
                         Rectangle()
-                            .fill(Color.black)
+                            .fill(rectangleColor(for: bar))
                             .cornerRadius(4)
                             .padding(2)
                         
                         Text(BarNameTranslation.nameMap[bar.name ?? ""] ?? bar.name ?? "")
                             .font(.system(size: 9))
-                            .foregroundColor(.white)
+                            .foregroundColor(textColor(for: bar))
                             .multilineTextAlignment(.center)
                             .lineLimit(3)
                             .padding(3)
@@ -145,6 +149,20 @@ struct MapView: View {
         }
         
         return Color.gray.opacity(0.1)
+    }
+    
+    // New function to determine rectangle color in English mode
+    private func rectangleColor(for bar: Bar) -> Color {
+        if bar.isVisited {
+            return Color.green.opacity(0.8)
+        } else {
+            return Color.black.opacity(0.7)
+        }
+    }
+    
+    // New function to determine text color in English mode
+    private func textColor(for bar: Bar) -> Color {
+        return Color.white
     }
     
     private func findBar(at row: Int, column: Int) -> Bar? {
