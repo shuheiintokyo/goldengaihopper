@@ -94,7 +94,13 @@ struct MapView: View {
         return ZStack {
             Rectangle()
                 .fill(cellBackgroundColor(for: bar))
-                .border(Color.gray.opacity(0.2), width: 0.5)
+                // Only add border if there's a bar in this cell
+                .overlay(
+                    bar != nil ?
+                    Rectangle()
+                        .strokeBorder(Color.gray.opacity(0.3), lineWidth: 1)
+                    : nil
+                )
             
             if let bar = bar {
                 if showEnglish {
