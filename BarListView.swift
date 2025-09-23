@@ -26,7 +26,7 @@ struct BarListView: View {
     }
     
     var body: some View {
-        NavigationStack(path: $presentedBars) {
+        Group {
             Group {
                 if visitedBars.isEmpty && !showingAllBars {
                     // Empty state for visited bars

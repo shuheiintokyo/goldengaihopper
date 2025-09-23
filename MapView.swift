@@ -20,75 +20,72 @@ struct MapView: View {
     private let cellSize: CGFloat = 80
     
     var body: some View {
-        NavigationView {
-            VStack {
-                // Language toggle button
-                Button(action: {
-                    showEnglish.toggle()
-                }) {
-                    HStack {
-                        Image(systemName: "globe")
-                        Text(showEnglish ? "Switch to Japanese" : "Switch to English")
-                    }
-                    .padding(8)
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
+        VStack {
+            // Language toggle button
+            Button(action: {
+                showEnglish.toggle()
+            }) {
+                HStack {
+                    Image(systemName: "globe")
+                    Text(showEnglish ? "Switch to Japanese" : "Switch to English")
                 }
-                .padding(.top, 8)
-                
-                GeometryReader { geometry in
-                    ScrollView([.horizontal, .vertical], showsIndicators: true) {
-                        ScrollViewReader { scrollViewProxy in
-                            VStack(spacing: 0) {
-                                ForEach(0..<35) { row in
-                                    HStack(spacing: 0) {
-                                        ForEach(0..<21) { column in
-                                            cellView(for: row, column: column)
-                                                .frame(width: cellSize, height: cellSize)
-                                                .id("\(row)-\(column)")
-                                        }
-                                    }
-                                }
-                            }
-                            .onChange(of: highlightedBarUUID) { oldValue, newValue in
-                                if let uuid = newValue,
-                                   let highlightedBar = bars.first(where: { $0.uuid == uuid }) {
-                                    let row = Int(highlightedBar.locationRow)
-                                    let column = Int(highlightedBar.locationColumn)
-                                    withAnimation {
-                                        scrollViewProxy.scrollTo("\(row)-\(column)", anchor: .center)
+                .padding(8)
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(8)
+            }
+            .padding(.top, 8)
+            
+            GeometryReader { geometry in
+                ScrollView([.horizontal, .vertical], showsIndicators: true) {
+                    ScrollViewReader { scrollViewProxy in
+                        VStack(spacing: 0) {
+                            ForEach(0..<35) { row in
+                                HStack(spacing: 0) {
+                                    ForEach(0..<21) { column in
+                                        cellView(for: row, column: column)
+                                            .frame(width: cellSize, height: cellSize)
+                                            .id("\(row)-\(column)")
                                     }
                                 }
                             }
                         }
-                    }
-                    .onAppear {
-                        scrollViewSize = geometry.size
+                        .onChange(of: highlightedBarUUID) { oldValue, newValue in
+                            if let uuid = newValue,
+                               let highlightedBar = bars.first(where: { $0.uuid == uuid }) {
+                                let row = Int(highlightedBar.locationRow)
+                                let column = Int(highlightedBar.locationColumn)
+                                withAnimation {
+                                    scrollViewProxy.scrollTo("\(row)-\(column)", anchor: .center)
+                                }
+                            }
+                        }
                     }
                 }
+                .onAppear {
+                    scrollViewSize = geometry.size
+                }
             }
-            .navigationTitle(showEnglish ? "Golden Gai Map" : "ゴールデン街マップ")
+        }
+        .navigationTitle(showEnglish ? "Golden Gai Map" : "ゴールデン街マップ")
+        .navigationDestination(for: Bar.self) { bar in
+            BarDetailView(bar: bar)
         }
         .sheet(item: $selectedBar) { bar in
-            NavigationView {
+            NavigationStack {
                 BarDetailView(bar: bar)
             }
         }
         .onAppear {
-            setupNotificationObserver()
-        }
-    }
-    
-    private func setupNotificationObserver() {
-        NotificationCenter.default.addObserver(
-            forName: NSNotification.Name("HighlightBar"),
-            object: nil,
-            queue: .main) { notification in
-                if let uuid = notification.userInfo?["barUUID"] as? String {
-                    self.highlightedBarUUID = uuid
+            NotificationCenter.default.addObserver(
+                forName: NSNotification.Name("HighlightBar"),
+                object: nil,
+                queue: .main) { notification in
+                    if let uuid = notification.userInfo?["barUUID"] as? String {
+                        self.highlightedBarUUID = uuid
+                    }
                 }
-            }
+        }
     }
     
     private func cellView(for row: Int, column: Int) -> some View {
@@ -103,13 +100,13 @@ struct MapView: View {
                 if showEnglish {
                     ZStack {
                         Rectangle()
-                            .fill(rectangleColor(for: bar))
+                            .fill(Color.black)
                             .cornerRadius(4)
                             .padding(2)
                         
                         Text(BarNameTranslation.nameMap[bar.name ?? ""] ?? bar.name ?? "")
                             .font(.system(size: 9))
-                            .foregroundColor(textColor(for: bar))
+                            .foregroundColor(.white)
                             .multilineTextAlignment(.center)
                             .lineLimit(3)
                             .padding(3)
@@ -149,20 +146,6 @@ struct MapView: View {
         }
         
         return Color.gray.opacity(0.1)
-    }
-    
-    // New function to determine rectangle color in English mode
-    private func rectangleColor(for bar: Bar) -> Color {
-        if bar.isVisited {
-            return Color.green.opacity(0.8)
-        } else {
-            return Color.black.opacity(0.7)
-        }
-    }
-    
-    // New function to determine text color in English mode
-    private func textColor(for bar: Bar) -> Color {
-        return Color.white
     }
     
     private func findBar(at row: Int, column: Int) -> Bar? {

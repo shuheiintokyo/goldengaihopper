@@ -15,50 +15,56 @@ struct ContentView: View {
     
     var body: some View {
         TabView(selection: $selection) {
-            // Home tab with horizontal scrolling cards
-            ZStack {
-                // Background color
-                Color(UIColor.systemBackground)
-                    .ignoresSafeArea()
-                
-                VStack(spacing: 0) {
-                    // Title
-                    Text(showEnglish ? "Golden Gai Bars" : "ゴールデン街バー")
-                        .font(.system(size: 46, weight: .black))
-                        .foregroundColor(colorScheme == .dark ? .white : .black)
-                        .padding(.top, 30)
-                        .padding(.bottom, 20)
+            // Home tab with horizontal scrolling cards - NOW WITH NAVIGATION
+            NavigationStack {
+                ZStack {
+                    // Background color
+                    Color(UIColor.systemBackground)
+                        .ignoresSafeArea()
                     
-                    // Scrolling cards with balanced height
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 25) {
-                            Spacer(minLength: 5)
-                            
-                            ForEach(bars, id: \.uuid) { bar in
-                                BarCardView(bar: bar)
-                                    .frame(width: UIScreen.main.bounds.width * 0.85)
-                                    .frame(height: 480)
-                                    .onTapGesture {
-                                        selectedBar = bar
-                                    }
-                                    .scrollTransition { content, phase in
-                                        content
-                                            .opacity(phase.isIdentity ? 1.0 : 0.6)
-                                            .scaleEffect(phase.isIdentity ? 1.0 : 0.9)
-                                            .offset(y: phase.isIdentity ? 0 : 15)
-                                            .blur(radius: phase.isIdentity ? 0 : 1)
-                                    }
+                    VStack(spacing: 0) {
+                        // Title
+                        Text(showEnglish ? "Golden Gai Bars" : "ゴールデン街バー")
+                            .font(.system(size: 46, weight: .black))
+                            .foregroundColor(colorScheme == .dark ? .white : .black)
+                            .padding(.top, 30)
+                            .padding(.bottom, 20)
+                        
+                        // Scrolling cards with balanced height
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 25) {
+                                Spacer(minLength: 5)
+                                
+                                ForEach(bars, id: \.uuid) { bar in
+                                    BarCardView(bar: bar)
+                                        .frame(width: UIScreen.main.bounds.width * 0.85)
+                                        .frame(height: 480)
+                                        .onTapGesture {
+                                            selectedBar = bar
+                                        }
+                                        .scrollTransition { content, phase in
+                                            content
+                                                .opacity(phase.isIdentity ? 1.0 : 0.6)
+                                                .scaleEffect(phase.isIdentity ? 1.0 : 0.9)
+                                                .offset(y: phase.isIdentity ? 0 : 15)
+                                                .blur(radius: phase.isIdentity ? 0 : 1)
+                                        }
+                                }
+                                
+                                Spacer(minLength: 20)
                             }
-                            
-                            Spacer(minLength: 20)
+                            .scrollTargetLayout()
+                            .padding(.vertical, 10)
                         }
-                        .scrollTargetLayout()
-                        .padding(.vertical, 10)
+                        .scrollTargetBehavior(.viewAligned)
+                        .frame(height: UIScreen.main.bounds.height * 0.65)
+                        
+                        Spacer()
                     }
-                    .scrollTargetBehavior(.viewAligned)
-                    .frame(height: UIScreen.main.bounds.height * 0.65)
-                    
-                    Spacer()
+                }
+                .navigationBarHidden(true) // Keep the custom title design
+                .navigationDestination(for: Bar.self) { bar in
+                    BarDetailView(bar: bar)
                 }
             }
             .tabItem {
@@ -66,39 +72,46 @@ struct ContentView: View {
             }
             .tag(0)
             
-            // List tab
-            BarListView()
-                .tabItem {
-                    Label(showEnglish ? "List" : "リスト", systemImage: "list.bullet")
-                }
-                .tag(1)
+            // List tab - Convert to NavigationStack for consistency
+            NavigationStack {
+                BarListView()
+            }
+            .tabItem {
+                Label(showEnglish ? "List" : "リスト", systemImage: "list.bullet")
+            }
+            .tag(1)
             
-            // Map tab
-            MapView()
-                .tabItem {
-                    Label(showEnglish ? "Map" : "マップ", systemImage: "map")
-                }
-                .tag(2)
+            // Map tab - Convert to NavigationStack for consistency
+            NavigationStack {
+                MapView()
+            }
+            .tabItem {
+                Label(showEnglish ? "Map" : "マップ", systemImage: "map")
+            }
+            .tag(2)
             
             // Logout tab
-            VStack {
-                Spacer()
-                Text(showEnglish ? "Are you sure you want to log out?" : "ログアウトしますか？")
-                    .font(.headline)
-                    .padding()
-                
-                Button(action: {
-                    isLoggedIn = false
-                }) {
-                    Text(showEnglish ? "Log Out" : "ログアウト")
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
+            NavigationStack {
+                VStack {
+                    Spacer()
+                    Text(showEnglish ? "Are you sure you want to log out?" : "ログアウトしますか？")
+                        .font(.headline)
                         .padding()
-                        .background(Color.red)
-                        .cornerRadius(10)
+                    
+                    Button(action: {
+                        isLoggedIn = false
+                    }) {
+                        Text(showEnglish ? "Log Out" : "ログアウト")
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.red)
+                            .cornerRadius(10)
+                    }
+                    .padding(.horizontal)
+                    Spacer()
                 }
-                .padding(.horizontal)
-                Spacer()
+                .navigationBarHidden(true)
             }
             .tabItem {
                 Label(showEnglish ? "Logout" : "ログアウト", systemImage: "rectangle.portrait.and.arrow.right")
@@ -106,7 +119,7 @@ struct ContentView: View {
             .tag(3)
         }
         .sheet(item: $selectedBar) { bar in
-            NavigationView {
+            NavigationStack {
                 BarDetailView(bar: bar)
             }
         }

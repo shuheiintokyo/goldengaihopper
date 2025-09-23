@@ -10,6 +10,7 @@ struct BarDetailView: View {
     @State private var notes: String
     @State private var selectedItem: PhotosPickerItem?
     @State private var barImage: UIImage?
+    @State private var showingVisitedAlert = false
     
     // Add notification for image updates
     private let imageUpdatedNotification = NotificationCenter.default.publisher(
@@ -79,6 +80,11 @@ struct BarDetailView: View {
                                let image = UIImage(data: data) {
                                 await MainActor.run {
                                     barImage = image
+                                    
+                                    // AUTO-VISIT: Mark as visited when photo is uploaded
+                                    let wasNotVisited = !bar.isVisited
+                                    bar.isVisited = true
+                                    
                                     if let uuid = bar.uuid {
                                         // Save image to disk
                                         ImageManager.saveImage(image, for: uuid)
@@ -95,6 +101,11 @@ struct BarDetailView: View {
                                         
                                         // Save context to ensure persistence
                                         try? viewContext.save()
+                                        
+                                        // Show confirmation if this was the first visit
+                                        if wasNotVisited {
+                                            showingVisitedAlert = true
+                                        }
                                     }
                                 }
                             }
@@ -181,6 +192,13 @@ struct BarDetailView: View {
             Text(showEnglish ? "Close" : "閉じる")
                 .bold()
         })
+        .alert(showEnglish ? "Bar Visited!" : "バー訪問済み！", isPresented: $showingVisitedAlert) {
+            Button("OK") { }
+        } message: {
+            Text(showEnglish ?
+                "Great! This bar has been automatically marked as visited since you uploaded a photo." :
+                "素晴らしい！写真をアップロードしたため、このバーは自動的に訪問済みとしてマークされました。")
+        }
     }
     
     private func saveNotes() {
