@@ -1,3 +1,4 @@
+// MapView.swift with Fixed Tab Bar Visibility
 import SwiftUI
 import CoreData
 
@@ -12,58 +13,65 @@ struct MapView: View {
     @State private var highlightedBarUUID: String?
     @AppStorage("showEnglish") var showEnglish = false
     
-    // Add scroll position tracking
     @State private var scrollPosition: CGPoint = .zero
     @State private var scrollViewSize: CGSize = .zero
     
-    // Fixed cell size for the grid
     private let cellSize: CGFloat = 80
     
     var body: some View {
-        VStack {
-            // Language toggle button
-            Button(action: {
-                showEnglish.toggle()
-            }) {
-                HStack {
-                    Image(systemName: "globe")
-                    Text(showEnglish ? "Switch to Japanese" : "Switch to English")
-                }
-                .padding(8)
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(8)
-            }
-            .padding(.top, 8)
+        ZStack {
+            // Simple background color instead of image
+            Color.gray.opacity(0.0)
+                .ignoresSafeArea(.all, edges: .top)
             
-            GeometryReader { geometry in
-                ScrollView([.horizontal, .vertical], showsIndicators: true) {
-                    ScrollViewReader { scrollViewProxy in
-                        VStack(spacing: 0) {
-                            ForEach(0..<35) { row in
-                                HStack(spacing: 0) {
-                                    ForEach(0..<21) { column in
-                                        cellView(for: row, column: column)
-                                            .frame(width: cellSize, height: cellSize)
-                                            .id("\(row)-\(column)")
+            VStack {
+                // Language toggle button
+                Button(action: {
+                    showEnglish.toggle()
+                }) {
+                    HStack {
+                        Image(systemName: "globe")
+                        Text(showEnglish ? "Switch to Japanese" : "Switch to English")
+                    }
+                    .padding(8)
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+                }
+                .padding(.top, 8)
+                
+                GeometryReader { geometry in
+                    ScrollView([.horizontal, .vertical], showsIndicators: true) {
+                        ScrollViewReader { scrollViewProxy in
+                            VStack(spacing: 0) {
+                                ForEach(0..<35) { row in
+                                    HStack(spacing: 0) {
+                                        ForEach(0..<21) { column in
+                                            cellView(for: row, column: column)
+                                                .frame(width: cellSize, height: cellSize)
+                                                .id("\(row)-\(column)")
+                                        }
+                                    }
+                                }
+                            }
+                            .background(Color.white.opacity(0.9))
+                            .cornerRadius(10)
+                            .padding()
+                            .onChange(of: highlightedBarUUID) { oldValue, newValue in
+                                if let uuid = newValue,
+                                   let highlightedBar = bars.first(where: { $0.uuid == uuid }) {
+                                    let row = Int(highlightedBar.locationRow)
+                                    let column = Int(highlightedBar.locationColumn)
+                                    withAnimation {
+                                        scrollViewProxy.scrollTo("\(row)-\(column)", anchor: .center)
                                     }
                                 }
                             }
                         }
-                        .onChange(of: highlightedBarUUID) { oldValue, newValue in
-                            if let uuid = newValue,
-                               let highlightedBar = bars.first(where: { $0.uuid == uuid }) {
-                                let row = Int(highlightedBar.locationRow)
-                                let column = Int(highlightedBar.locationColumn)
-                                withAnimation {
-                                    scrollViewProxy.scrollTo("\(row)-\(column)", anchor: .center)
-                                }
-                            }
-                        }
                     }
-                }
-                .onAppear {
-                    scrollViewSize = geometry.size
+                    .onAppear {
+                        scrollViewSize = geometry.size
+                    }
                 }
             }
         }
@@ -94,7 +102,6 @@ struct MapView: View {
         return ZStack {
             Rectangle()
                 .fill(cellBackgroundColor(for: bar))
-                // Only add border if there's a bar in this cell
                 .overlay(
                     bar != nil ?
                     Rectangle()

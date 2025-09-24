@@ -8,40 +8,45 @@ struct BarListView: View {
         animation: .default)
     private var bars: FetchedResults<Bar>
     
-    // NavigationStack state management
     @State private var presentedBars: [Bar] = []
-    
     @State private var showingAllBars = false
     @State private var barNameCounts: [String: Int] = [:]
     @AppStorage("showEnglish") var showEnglish = false
     
-    // Computed property for visited bars
     private var visitedBars: [Bar] {
         return bars.filter { $0.isVisited }
     }
     
-    // Computed property for all bars or visited only
     private var displayedBars: [Bar] {
         return showingAllBars ? Array(bars) : visitedBars
     }
     
     var body: some View {
-        Group {
+        ZStack {
+            // Custom background image that user can control
+            DynamicBackgroundImage(viewName: "BarListView", defaultImageName: "BarListBackground")
+                .ignoresSafeArea(.all, edges: .top)
+            
+            // Semi-transparent overlay - only ignore top safe area, not bottom
+            Color.black.opacity(0.4)
+                .ignoresSafeArea(.all, edges: .top)
+            
             Group {
                 if visitedBars.isEmpty && !showingAllBars {
                     // Empty state for visited bars
                     VStack(spacing: 20) {
                         Image(systemName: "checkmark.circle")
                             .font(.system(size: 60))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white)
                         
                         Text(showEnglish ? "No Visited Bars Yet" : "まだ訪問したバーがありません")
                             .font(.title2)
                             .fontWeight(.medium)
+                            .foregroundColor(.white)
                         
                         Text(showEnglish ? "Visit bars to see them appear here" : "バーを訪問するとここに表示されます")
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.white.opacity(0.8))
                             .multilineTextAlignment(.center)
                         
                         Button(action: {
@@ -62,7 +67,9 @@ struct BarListView: View {
                         Section {
                             Toggle(showEnglish ? "Show All Bars" : "全てのバーを表示", isOn: $showingAllBars)
                                 .padding(.vertical, 8)
+                                .tint(Color.blue)
                         }
+                        .listRowBackground(Color.white.opacity(0.1))
                         
                         // Bars list
                         Section(header: Text(showEnglish ?
@@ -75,30 +82,29 @@ struct BarListView: View {
                                 }
                                 .listRowBackground(
                                     RoundedRectangle(cornerRadius: 10)
-                                        .fill(bar.isVisited ? Color.green.opacity(0.1) : Color.gray.opacity(0.05))
+                                        .fill(bar.isVisited ? Color.green.opacity(0.2) : Color.white.opacity(0.1))
                                         .padding(.vertical, 4)
                                 )
                             }
                         }
+                        .foregroundColor(.white)
                     }
                     .listStyle(PlainListStyle())
+                    .scrollContentBackground(.hidden)
                 }
             }
-            .navigationTitle(showEnglish ? "Golden Gai Bars" : "ゴールデン街バー")
-            .navigationDestination(for: Bar.self) { bar in
-                BarDetailView(bar: bar)
-            }
-            .onAppear {
-                countBarNames()
-                validateBars()
-            }
-            .onChange(of: bars.map { $0.isVisited }) { oldValue, newValue in
-                // React to changes in visited status
-                if !showingAllBars && visitedBars.isEmpty {
-                    // If we're showing visited only and no bars are visited,
-                    // clear the navigation stack
-                    presentedBars.removeAll()
-                }
+        }
+        .navigationTitle(showEnglish ? "Golden Gai Bars" : "ゴールデン街バー")
+        .navigationDestination(for: Bar.self) { bar in
+            BarDetailView(bar: bar)
+        }
+        .onAppear {
+            countBarNames()
+            validateBars()
+        }
+        .onChange(of: bars.map { $0.isVisited }) { oldValue, newValue in
+            if !showingAllBars && visitedBars.isEmpty {
+                presentedBars.removeAll()
             }
         }
     }
@@ -139,57 +145,47 @@ struct BarListView: View {
     }
 }
 
-// MARK: - Custom Row View
 struct BarRowView: View {
     let bar: Bar
     let showEnglish: Bool
     
     var body: some View {
         HStack {
-            // Bar status indicator
             Image(systemName: bar.isVisited ? "checkmark.circle.fill" : "circle")
-                .foregroundColor(bar.isVisited ? .green : .gray)
+                .foregroundColor(bar.isVisited ? .green : .white.opacity(0.6))
                 .font(.title2)
             
             VStack(alignment: .leading, spacing: 4) {
-                // Bar name
                 if showEnglish {
                     Text(BarNameTranslation.nameMap[bar.name ?? ""] ?? bar.name ?? "Unknown")
                         .font(.system(size: 18, weight: .medium))
                         .lineLimit(1)
+                        .foregroundColor(.white)
                 } else {
                     Text(bar.name ?? "不明")
                         .font(.system(size: 18, weight: .medium))
                         .lineLimit(1)
+                        .foregroundColor(.white)
                 }
                 
-                // Location info
                 Text("Row \(bar.locationRow), Col \(bar.locationColumn)")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.white.opacity(0.7))
                 
-                // Notes preview if available
                 if let notes = bar.notes, !notes.isEmpty {
                     Text(notes)
                         .font(.caption)
-                        .foregroundColor(.gray)
+                        .foregroundColor(.white.opacity(0.6))
                         .lineLimit(1)
                 }
             }
             
             Spacer()
             
-            // Navigation indicator
             Image(systemName: "chevron.right")
-                .foregroundColor(.gray)
+                .foregroundColor(.white.opacity(0.5))
                 .font(.system(size: 14))
         }
         .padding(.vertical, 8)
     }
-}
-
-// MARK: - Preview
-#Preview {
-    BarListView()
-        .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
 }

@@ -15,18 +15,23 @@ struct ContentView: View {
     
     var body: some View {
         TabView(selection: $selection) {
-            // Home tab with horizontal scrolling cards - NOW WITH NAVIGATION
+            // Home tab with horizontal scrolling cards
             NavigationStack {
                 ZStack {
-                    // Background color
-                    Color(UIColor.systemBackground)
-                        .ignoresSafeArea()
+                    // Custom background image that user can control
+                    DynamicBackgroundImage(viewName: "ContentView", defaultImageName: "ContentBackground")
+                        .ignoresSafeArea(.all, edges: .top) // Only ignore top safe area, not bottom
+                    
+                    // Semi-transparent overlay for better readability
+                    Color.black.opacity(0.3)
+                        .ignoresSafeArea(.all, edges: .top) // Only ignore top safe area, not bottom
                     
                     VStack(spacing: 0) {
                         // Title
                         Text(showEnglish ? "Golden Gai Bars" : "ゴールデン街バー")
                             .font(.system(size: 46, weight: .black))
-                            .foregroundColor(colorScheme == .dark ? .white : .black)
+                            .foregroundColor(.white)
+                            .shadow(radius: 5)
                             .padding(.top, 30)
                             .padding(.bottom, 20)
                         
@@ -62,7 +67,7 @@ struct ContentView: View {
                         Spacer()
                     }
                 }
-                .navigationBarHidden(true) // Keep the custom title design
+                .navigationBarHidden(true)
                 .navigationDestination(for: Bar.self) { bar in
                     BarDetailView(bar: bar)
                 }
@@ -72,7 +77,7 @@ struct ContentView: View {
             }
             .tag(0)
             
-            // List tab - Convert to NavigationStack for consistency
+            // List tab
             NavigationStack {
                 BarListView()
             }
@@ -81,7 +86,7 @@ struct ContentView: View {
             }
             .tag(1)
             
-            // Map tab - Convert to NavigationStack for consistency
+            // Map tab
             NavigationStack {
                 MapView()
             }
@@ -90,45 +95,47 @@ struct ContentView: View {
             }
             .tag(2)
             
-            // Logout tab
+            // Settings tab
             NavigationStack {
-                VStack {
-                    Spacer()
-                    Text(showEnglish ? "Are you sure you want to log out?" : "ログアウトしますか？")
-                        .font(.headline)
-                        .padding()
-                    
-                    Button(action: {
-                        isLoggedIn = false
-                    }) {
-                        Text(showEnglish ? "Log Out" : "ログアウト")
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.red)
-                            .cornerRadius(10)
-                    }
-                    .padding(.horizontal)
-                    Spacer()
-                }
-                .navigationBarHidden(true)
+                SettingsView()
             }
             .tabItem {
-                Label(showEnglish ? "Logout" : "ログアウト", systemImage: "rectangle.portrait.and.arrow.right")
+                Label(showEnglish ? "Settings" : "設定", systemImage: "gearshape.fill")
             }
             .tag(3)
+        }
+        .onAppear {
+            setupTabBarAppearance()
+            setupNotifications()
         }
         .sheet(item: $selectedBar) { bar in
             NavigationStack {
                 BarDetailView(bar: bar)
             }
         }
-        .onAppear {
-            setupNotifications()
-        }
     }
     
-    // MARK: - Helper methods
+    private func setupTabBarAppearance() {
+        // Configure tab bar appearance to make it visible
+        let tabBarAppearance = UITabBarAppearance()
+        tabBarAppearance.configureWithOpaqueBackground()
+        tabBarAppearance.backgroundColor = UIColor.black.withAlphaComponent(0.9)
+        
+        // Configure tab bar item colors
+        tabBarAppearance.stackedLayoutAppearance.normal.iconColor = UIColor.white.withAlphaComponent(0.6)
+        tabBarAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [
+            .foregroundColor: UIColor.white.withAlphaComponent(0.6)
+        ]
+        
+        tabBarAppearance.stackedLayoutAppearance.selected.iconColor = UIColor.systemBlue
+        tabBarAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [
+            .foregroundColor: UIColor.systemBlue
+        ]
+        
+        // Apply the appearance
+        UITabBar.appearance().standardAppearance = tabBarAppearance
+        UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
+    }
     
     private func setupNotifications() {
         NotificationCenter.default.addObserver(

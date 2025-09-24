@@ -10,7 +10,11 @@
 		05542F022D8ECD6600E4BA8D /* BarCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05542F012D8ECD6100E4BA8D /* BarCardView.swift */; };
 		055549892D8D37AF0040C2E3 /* BarNameTranslation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055549882D8D37A80040C2E3 /* BarNameTranslation.swift */; };
 		057DE7322D90243600867B88 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057DE72F2D90243600867B88 /* LoginView.swift */; };
-		057DE7342D902B5800867B88 /* Subject.png in Resources */ = {isa = PBXBuildFile; fileRef = 057DE7332D902B5800867B88 /* Subject.png */; };
+		058D15892E83ACED001FE94C /* RemoteDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058D15882E83ACE5001FE94C /* RemoteDataService.swift */; };
+		058D158B2E83B16E001FE94C /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058D158A2E83B169001FE94C /* SettingsView.swift */; };
+		058D158D2E83CBF2001FE94C /* CustomBackgroundImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058D158C2E83CBF0001FE94C /* CustomBackgroundImage.swift */; };
+		058D158F2E83CC39001FE94C /* BackgroundPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058D158E2E83CC36001FE94C /* BackgroundPreference.swift */; };
+		058D15912E83D1EB001FE94C /* DynamicBackgroundImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058D15902E83D1E9001FE94C /* DynamicBackgroundImage.swift */; };
 		05CB03312D85B8AB00B53437 /* golden-gai-json-data.json in Resources */ = {isa = PBXBuildFile; fileRef = 05CB03302D85B8AB00B53437 /* golden-gai-json-data.json */; };
 		05CB03742D85C3C800B53437 /* Bar+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CB03722D85C3C800B53437 /* Bar+CoreDataClass.swift */; };
 		05CB03752D85C3C800B53437 /* Bar+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CB03732D85C3C800B53437 /* Bar+CoreDataProperties.swift */; };
@@ -49,7 +53,11 @@
 		055549872D8D2BB80040C2E3 /* GoldenGaiHopperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GoldenGaiHopperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		055549882D8D37A80040C2E3 /* BarNameTranslation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarNameTranslation.swift; sourceTree = "<group>"; };
 		057DE72F2D90243600867B88 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
-		057DE7332D902B5800867B88 /* Subject.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Subject.png; sourceTree = "<group>"; };
+		058D15882E83ACE5001FE94C /* RemoteDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteDataService.swift; sourceTree = "<group>"; };
+		058D158A2E83B169001FE94C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		058D158C2E83CBF0001FE94C /* CustomBackgroundImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBackgroundImage.swift; sourceTree = "<group>"; };
+		058D158E2E83CC36001FE94C /* BackgroundPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundPreference.swift; sourceTree = "<group>"; };
+		058D15902E83D1E9001FE94C /* DynamicBackgroundImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicBackgroundImage.swift; sourceTree = "<group>"; };
 		05CB03302D85B8AB00B53437 /* golden-gai-json-data.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "golden-gai-json-data.json"; sourceTree = "<group>"; };
 		05CB03722D85C3C800B53437 /* Bar+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bar+CoreDataClass.swift"; sourceTree = "<group>"; };
 		05CB03732D85C3C800B53437 /* Bar+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bar+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -91,29 +99,57 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		058D15852E83AC46001FE94C /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				058D158A2E83B169001FE94C /* SettingsView.swift */,
+				05CB044F2D868EFF00B53437 /* BarListView.swift */,
+				05CB044E2D868EFF00B53437 /* BarDetailView.swift */,
+				05CB04502D868EFF00B53437 /* ContentView.swift */,
+				057DE72F2D90243600867B88 /* LoginView.swift */,
+				05CB04542D868EFF00B53437 /* MapView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		058D15862E83AC62001FE94C /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				058D15902E83D1E9001FE94C /* DynamicBackgroundImage.swift */,
+				05542F012D8ECD6100E4BA8D /* BarCardView.swift */,
+				058D158C2E83CBF0001FE94C /* CustomBackgroundImage.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		058D15872E83AC6F001FE94C /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				058D15882E83ACE5001FE94C /* RemoteDataService.swift */,
+				05CB04512D868EFF00B53437 /* DataImportService.swift */,
+				058D158E2E83CC36001FE94C /* BackgroundPreference.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		05CB02F12D85B73A00B53437 = {
 			isa = PBXGroup;
 			children = (
-				05542F012D8ECD6100E4BA8D /* BarCardView.swift */,
+				058D15862E83AC62001FE94C /* Components */,
+				058D15852E83AC46001FE94C /* Views */,
 				055549882D8D37A80040C2E3 /* BarNameTranslation.swift */,
-				057DE72F2D90243600867B88 /* LoginView.swift */,
+				058D15872E83AC6F001FE94C /* Utilities */,
 				05CB03722D85C3C800B53437 /* Bar+CoreDataClass.swift */,
 				05CB03732D85C3C800B53437 /* Bar+CoreDataProperties.swift */,
 				05CB03302D85B8AB00B53437 /* golden-gai-json-data.json */,
 				05CB03FD2D867B7300B53437 /* .gitignore  */,
 				05CB044D2D868EFF00B53437 /* Assets.xcassets */,
-				05CB044E2D868EFF00B53437 /* BarDetailView.swift */,
-				05CB044F2D868EFF00B53437 /* BarListView.swift */,
-				05CB04502D868EFF00B53437 /* ContentView.swift */,
-				05CB04512D868EFF00B53437 /* DataImportService.swift */,
 				05CB04522D868EFF00B53437 /* GoldenPeace.xcdatamodeld */,
 				05CB04532D868EFF00B53437 /* GoldenPeaceApp.swift */,
-				05CB04542D868EFF00B53437 /* MapView.swift */,
 				05CB04552D868EFF00B53437 /* PersistenceController.swift */,
 				05CB04662D869AD300B53437 /* GoldenGaiHopper.app */,
 				055549862D8D2BB80040C2E3 /* GoldenGaiHopperTests.xctest */,
 				055549872D8D2BB80040C2E3 /* GoldenGaiHopperUITests.xctest */,
-				057DE7332D902B5800867B88 /* Subject.png */,
 			);
 			sourceTree = "<group>";
 		};
@@ -230,7 +266,6 @@
 			files = (
 				05CB04202D867B7300B53437 /* .gitignore  in Resources */,
 				05CB04612D868EFF00B53437 /* Assets.xcassets in Resources */,
-				057DE7342D902B5800867B88 /* Subject.png in Resources */,
 				05CB03312D85B8AB00B53437 /* golden-gai-json-data.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -256,17 +291,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				058D158B2E83B16E001FE94C /* SettingsView.swift in Sources */,
 				05CB03742D85C3C800B53437 /* Bar+CoreDataClass.swift in Sources */,
 				05CB03752D85C3C800B53437 /* Bar+CoreDataProperties.swift in Sources */,
 				05CB04592D868EFF00B53437 /* BarDetailView.swift in Sources */,
+				058D158D2E83CBF2001FE94C /* CustomBackgroundImage.swift in Sources */,
+				058D158F2E83CC39001FE94C /* BackgroundPreference.swift in Sources */,
 				05CB045A2D868EFF00B53437 /* BarListView.swift in Sources */,
 				05CB045B2D868EFF00B53437 /* ContentView.swift in Sources */,
 				057DE7322D90243600867B88 /* LoginView.swift in Sources */,
 				05CB045C2D868EFF00B53437 /* DataImportService.swift in Sources */,
 				05CB045D2D868EFF00B53437 /* GoldenPeace.xcdatamodeld in Sources */,
+				058D15912E83D1EB001FE94C /* DynamicBackgroundImage.swift in Sources */,
 				055549892D8D37AF0040C2E3 /* BarNameTranslation.swift in Sources */,
 				05CB045E2D868EFF00B53437 /* GoldenPeaceApp.swift in Sources */,
 				05CB045F2D868EFF00B53437 /* MapView.swift in Sources */,
+				058D15892E83ACED001FE94C /* RemoteDataService.swift in Sources */,
 				05542F022D8ECD6600E4BA8D /* BarCardView.swift in Sources */,
 				05CB04602D868EFF00B53437 /* PersistenceController.swift in Sources */,
 			);
