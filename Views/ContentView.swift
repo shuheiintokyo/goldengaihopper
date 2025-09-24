@@ -44,7 +44,7 @@ struct ContentView: View {
                                         let bar = bars[index]
                                         BarCardView(bar: bar)
                                             .frame(width: geometry.size.width * 0.85)
-                                            .frame(height: 480)
+                                            .frame(height: 450)
                                             .padding(.horizontal, geometry.size.width * 0.075) // 7.5% on each side
                                             .onTapGesture {
                                                 selectedBar = bar

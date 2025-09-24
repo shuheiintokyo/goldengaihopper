@@ -38,12 +38,12 @@ struct BarCardView: View {
     
     var body: some View {
         ZStack {
-            // Clean card background with sharp border
+            // Clean card background with properly rendered border
             RoundedRectangle(cornerRadius: 20)
                 .fill(uniqueColor)
-                .background(
+                .overlay(
                     RoundedRectangle(cornerRadius: 20)
-                        .stroke(Color.white.opacity(0.15), lineWidth: 0.5)
+                        .stroke(Color.white.opacity(0.2))
                 )
             
             // Main content layout
@@ -68,6 +68,10 @@ struct BarCardView: View {
                         RoundedRectangle(cornerRadius: 16)
                             .fill(uniqueColor.opacity(0.3))
                             .frame(height: 320)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
+                            )
                             .id(refreshID)
                     }
                 }
