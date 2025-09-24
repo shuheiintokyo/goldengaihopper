@@ -23,10 +23,11 @@ struct BarListView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            ZStack {
+            ZStack(alignment: .top) {
                 // Custom background image that user can control
                 DynamicBackgroundImage(viewName: "BarListView", defaultImageName: "BarListBackground")
                     .ignoresSafeArea(.all, edges: .top)
+                    .clipped() // Prevent background from affecting layout
                 
                 // Semi-transparent overlay - only ignore top safe area, not bottom
                 Color.black.opacity(0.4)
@@ -76,7 +77,9 @@ struct BarListView: View {
                                 }
                             }
                             .listRowBackground(
-                                Color.white.opacity(0.1)
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Color.white.opacity(0.1))
+                                    .padding(.horizontal, 4)
                             )
                             
                             // Bars list
@@ -87,26 +90,29 @@ struct BarListView: View {
                                         (showingAllBars ? "All Bars (\(bars.count))" : "Visited Bars (\(visitedBars.count))") :
                                         (showingAllBars ? "全てのバー (\(bars.count))" : "訪問済みバー (\(visitedBars.count))"))
                                         .foregroundColor(.white)
-                                        .font(.headline)
                                     Spacer()
                                 }
                             ) {
                                 ForEach(displayedBars, id: \.uuid) { bar in
                                     NavigationLink(value: bar) {
                                         BarRowView(bar: bar, showEnglish: showEnglish)
+                                            .frame(maxWidth: .infinity)
                                     }
                                     .listRowBackground(
                                         RoundedRectangle(cornerRadius: 10)
                                             .fill(bar.isVisited ? Color.green.opacity(0.2) : Color.white.opacity(0.1))
                                             .padding(.vertical, 2)
+                                            .padding(.horizontal, 4)
                                     )
                                 }
                             }
                         }
                         .listStyle(PlainListStyle())
                         .scrollContentBackground(.hidden)
+                        .frame(maxWidth: .infinity)
                     }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
         .navigationTitle(showEnglish ? "Golden Gai Bars" : "ゴールデン街バー")
@@ -169,31 +175,30 @@ struct BarRowView: View {
             Image(systemName: bar.isVisited ? "checkmark.circle.fill" : "circle")
                 .foregroundColor(bar.isVisited ? .green : .white.opacity(0.6))
                 .font(.title2)
-                .frame(width: 28, height: 28) // Fixed size to prevent layout shifts
+                .frame(width: 24, height: 24) // Fixed width to prevent shifting
             
-            VStack(alignment: .leading, spacing: 6) {
-                // Bar name with proper wrapping
-                Group {
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
                     if showEnglish {
                         Text(BarNameTranslation.nameMap[bar.name ?? ""] ?? bar.name ?? "Unknown")
                             .font(.system(size: 18, weight: .medium))
+                            .lineLimit(2) // Allow 2 lines for longer names
                             .foregroundColor(.white)
+                            .multilineTextAlignment(.leading)
                     } else {
                         Text(bar.name ?? "不明")
                             .font(.system(size: 18, weight: .medium))
+                            .lineLimit(2) // Allow 2 lines for longer names
                             .foregroundColor(.white)
+                            .multilineTextAlignment(.leading)
                     }
+                    Spacer()
                 }
-                .lineLimit(2)
-                .multilineTextAlignment(.leading)
-                .frame(maxWidth: .infinity, alignment: .leading)
                 
-                // Location info
                 Text("Row \(bar.locationRow), Col \(bar.locationColumn)")
                     .font(.caption)
                     .foregroundColor(.white.opacity(0.7))
                 
-                // Notes if available
                 if let notes = bar.notes, !notes.isEmpty {
                     Text(notes)
                         .font(.caption)
@@ -202,16 +207,16 @@ struct BarRowView: View {
                         .multilineTextAlignment(.leading)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
             
-            // Chevron
+            Spacer(minLength: 8)
+            
             Image(systemName: "chevron.right")
                 .foregroundColor(.white.opacity(0.5))
-                .font(.system(size: 14, weight: .medium))
-                .frame(width: 16, height: 16)
+                .font(.system(size: 14))
+                .frame(width: 14, height: 14) // Fixed size
         }
-        .padding(.vertical, 14)
-        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .padding(.horizontal, 8)
         .contentShape(Rectangle()) // Make entire row tappable
     }
 }
