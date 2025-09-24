@@ -17,27 +17,26 @@ struct ContentView: View {
         TabView(selection: $selection) {
             // Home tab with horizontal scrolling cards
             NavigationStack {
-                GeometryReader { geometry in
-                    ZStack {
-                        // Custom background image that user can control
-                        DynamicBackgroundImage(viewName: "ContentView", defaultImageName: "ContentBackground")
-                            .ignoresSafeArea(.all, edges: .top)
-                            .clipped() // Prevent background from affecting layout
+                ZStack {
+                    // Custom background image that user can control
+                    DynamicBackgroundImage(viewName: "ContentView", defaultImageName: "ContentBackground")
+                        .ignoresSafeArea()  // This will ignore ALL safe areas
+                    
+                    // Semi-transparent overlay for better readability
+                    Color.black.opacity(0.3)
+                        .ignoresSafeArea()  // This will ignore ALL safe areas
+                    
+                    VStack(spacing: 0) {
+                        // Title
+                        Text(showEnglish ? "Golden Gai Bars" : "ゴールデン街バー")
+                            .font(.system(size: 46, weight: .black))
+                            .foregroundColor(.white)
+                            .shadow(radius: 5)
+                            .padding(.top, 60)  // Adjusted for status bar
+                            .padding(.bottom, 20)
                         
-                        // Semi-transparent overlay for better readability
-                        Color.black.opacity(0.3)
-                            .ignoresSafeArea(.all, edges: .top)
-                        
-                        VStack(spacing: 0) {
-                            // Title
-                            Text(showEnglish ? "Golden Gai Bars" : "ゴールデン街バー")
-                                .font(.system(size: 46, weight: .black))
-                                .foregroundColor(.white)
-                                .shadow(radius: 5)
-                                .padding(.top, 30)
-                                .padding(.bottom, 20)
-                            
-                            // Scrolling cards with balanced height
+                        // Scrolling cards with balanced height
+                        GeometryReader { geometry in
                             ScrollView(.horizontal, showsIndicators: false) {
                                 LazyHStack(spacing: 0) {
                                     ForEach(bars.indices, id: \.self) { index in
@@ -61,11 +60,10 @@ struct ContentView: View {
                                 .scrollTargetLayout()
                             }
                             .scrollTargetBehavior(.viewAligned)
-                            .frame(height: geometry.size.height * 0.65)
                             .scrollIndicators(.hidden)
-                            
-                            Spacer()
                         }
+                        
+                        Spacer()
                     }
                 }
                 .navigationBarHidden(true)

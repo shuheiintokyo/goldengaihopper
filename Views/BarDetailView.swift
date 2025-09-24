@@ -1,269 +1,339 @@
 import SwiftUI
-import CoreData
 import PhotosUI
+import MapKit
 
 struct BarDetailView: View {
+    let bar: Bar
+    
     @Environment(\.managedObjectContext) private var viewContext
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
     @AppStorage("showEnglish") var showEnglish = false
-    @ObservedObject var bar: Bar
-    @State private var notes: String
-    @State private var selectedItem: PhotosPickerItem?
-    @State private var barImage: UIImage?
-    @State private var showingVisitedAlert = false
     
-    // Add notification for image updates
-    private let imageUpdatedNotification = NotificationCenter.default.publisher(
-        for: NSNotification.Name("ImageUpdated")
-    )
+    @State private var showingImagePicker = false
+    @State private var inputImage: UIImage?
+    @State private var refreshID = UUID()
+    @State private var showingDeleteAlert = false
+    @State private var showingMap = false
+    @State private var notes: String = ""
     
-    init(bar: Bar) {
-        self.bar = bar
-        _notes = State(initialValue: bar.notes ?? "")
-        
-        // Initialize by checking for existing image
-        if let uuid = bar.uuid {
-            _barImage = State(initialValue: ImageManager.loadImage(for: uuid))
+    // Get English translation if available
+    private var englishName: String? {
+        guard let japaneseName = bar.name,
+              let translation = BarNameTranslation.nameMap[japaneseName],
+              translation != japaneseName else {
+            return nil
         }
+        return translation
     }
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .center, spacing: 20) {
-                if showEnglish {
-                    Text(BarNameTranslation.nameMap[bar.name ?? ""] ?? bar.name ?? "Unknown Bar")
+            VStack(spacing: 20) {
+                // Header with title
+                VStack(spacing: 8) {
+                    Text(bar.name ?? "Unknown")
                         .font(.largeTitle)
                         .fontWeight(.bold)
-                        .padding(.top, 20)
                         .multilineTextAlignment(.center)
-                } else {
-                    Text(bar.name ?? "不明なバー")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .padding(.top, 20)
-                        .multilineTextAlignment(.center)
+                    
+                    if let englishName = englishName {
+                        Text(englishName)
+                            .font(.title3)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
                 }
+                .padding(.horizontal)
+                .padding(.top)
                 
-                // Image section
-                VStack {
-                    if let image = barImage {
+                // Bar Image Section
+                ZStack {
+                    if let uuid = bar.uuid, let image = ImageManager.loadImage(for: uuid) {
                         Image(uiImage: image)
                             .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(height: 200)
-                            .cornerRadius(12)
-                            .clipped()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxHeight: 400)
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                            .id(refreshID)
                     } else {
-                        Rectangle()
+                        RoundedRectangle(cornerRadius: 16)
                             .fill(Color.gray.opacity(0.2))
-                            .frame(height: 200)
-                            .cornerRadius(12)
+                            .frame(height: 300)
                             .overlay(
-                                Image(systemName: "photo")
-                                    .font(.system(size: 40))
-                                    .foregroundColor(.gray)
+                                VStack(spacing: 12) {
+                                    Image(systemName: "photo")
+                                        .font(.system(size: 50))
+                                        .foregroundColor(.gray)
+                                    Text(showEnglish ? "No Photo" : "写真なし")
+                                        .foregroundColor(.gray)
+                                }
                             )
                     }
-                    
-                    // Image picker
-                    PhotosPicker(selection: $selectedItem, matching: .images) {
-                        Label(showEnglish ? "Add Photo" : "写真を追加", systemImage: "photo")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.blue.opacity(0.8))
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                    }
-                    .onChange(of: selectedItem) { oldValue, newValue in
-                        Task {
-                            if let data = try? await newValue?.loadTransferable(type: Data.self),
-                               let image = UIImage(data: data) {
-                                await MainActor.run {
-                                    barImage = image
-                                    
-                                    // AUTO-VISIT: Mark as visited when photo is uploaded
-                                    let wasNotVisited = !bar.isVisited
-                                    bar.isVisited = true
-                                    
-                                    if let uuid = bar.uuid {
-                                        // Save image to disk
-                                        ImageManager.saveImage(image, for: uuid)
-                                        
-                                        // Notify other views that image has been updated
-                                        NotificationCenter.default.post(
-                                            name: NSNotification.Name("ImageUpdated"),
-                                            object: nil,
-                                            userInfo: ["barUUID": uuid]
-                                        )
-                                        
-                                        // Update the bar object to trigger refresh
-                                        bar.objectWillChange.send()
-                                        
-                                        // Save context to ensure persistence
-                                        try? viewContext.save()
-                                        
-                                        // Show confirmation if this was the first visit
-                                        if wasNotVisited {
-                                            showingVisitedAlert = true
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
                 }
                 .padding(.horizontal)
                 
-                Divider()
-                
-                HStack {
-                    Text(showEnglish ? "Status:" : "ステータス:")
-                        .font(.headline)
-                    
-                    Spacer()
-                    
-                    Text(bar.isVisited ? (showEnglish ? "Visited" : "訪問済み") : (showEnglish ? "Not Visited Yet" : "未訪問"))
-                        .foregroundColor(bar.isVisited ? .green : .gray)
-                        .fontWeight(.medium)
-                }
-                .padding(.horizontal)
-                
-                Toggle(isOn: Binding(
-                    get: { bar.isVisited },
-                    set: {
-                        bar.isVisited = $0
-                        try? viewContext.save()
-                    }
-                )) {
-                    Text(showEnglish ? "Mark as Visited" : "訪問済みにする")
-                        .font(.headline)
-                }
-                .padding(.horizontal)
-                
+                // Add/Change Photo Button
                 Button(action: {
-                    findInMap()
+                    showingImagePicker = true
                 }) {
                     HStack {
-                        Image(systemName: "map")
-                        Text(showEnglish ? "Find in Map" : "マップで探す")
+                        Image(systemName: "photo")
+                        Text(showEnglish ? "Add Photo" : "写真を追加")
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(Color.blue)
                     .foregroundColor(.white)
-                    .cornerRadius(10)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
                 .padding(.horizontal)
                 
-                VStack(alignment: .leading) {
-                    Text(showEnglish ? "Notes" : "メモ")
+                // Status Section
+                VStack(alignment: .leading, spacing: 16) {
+                    Text(showEnglish ? "Status:" : "ステータス:")
                         .font(.headline)
-                        .padding(.horizontal)
                     
-                    TextEditor(text: $notes)
-                        .frame(minHeight: 150)
-                        .padding(8)
-                        .background(Color(UIColor.systemGray6))
-                        .cornerRadius(8)
-                        .padding(.horizontal)
+                    Toggle(isOn: Binding(
+                        get: { bar.isVisited },
+                        set: { newValue in
+                            bar.isVisited = newValue
+                            try? viewContext.save()
+                        }
+                    )) {
+                        HStack {
+                            Text(showEnglish ? "Visited" : "訪問済み")
+                                .font(.body)
+                            Spacer()
+                            if bar.isVisited {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.green)
+                            }
+                        }
+                    }
+                    .tint(.green)
                 }
+                .padding()
+                .background(Color(UIColor.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
                 
+                // Location on Map Button
                 Button(action: {
-                    saveNotes()
+                    showingMap = true
                 }) {
                     HStack {
-                        Image(systemName: "square.and.pencil")
-                        Text(showEnglish ? "Save Notes" : "メモを保存")
+                        Image(systemName: "map")
+                        Text(showEnglish ? "Find on Map" : "マップで探す")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
                     }
-                    .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+                    .background(Color(UIColor.secondarySystemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
                 .padding(.horizontal)
+                
+                // Notes Section
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(showEnglish ? "Notes" : "メモ")
+                        .font(.headline)
+                    
+                    TextEditor(text: $notes)
+                        .frame(minHeight: 100)
+                        .padding(8)
+                        .background(Color(UIColor.tertiarySystemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .onChange(of: notes) { oldValue, newValue in
+                            bar.notes = newValue
+                            try? viewContext.save()
+                        }
+                }
+                .padding()
+                .background(Color(UIColor.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+                
+                // Delete Image Button (if image exists)
+                if let uuid = bar.uuid, ImageManager.loadImage(for: uuid) != nil {
+                    Button(action: {
+                        showingDeleteAlert = true
+                    }) {
+                        HStack {
+                            Image(systemName: "trash")
+                            Text(showEnglish ? "Delete Photo" : "写真を削除")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.red.opacity(0.1))
+                        .foregroundColor(.red)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    .padding(.horizontal)
+                }
+                
+                Spacer(minLength: 50)
             }
-            .padding(.bottom, 30)
         }
-        .navigationBarTitle(showEnglish ? "Bar Details" : "バーの詳細", displayMode: .inline)
-        .navigationBarItems(trailing: Button(action: {
-            presentationMode.wrappedValue.dismiss()
-        }) {
-            Text(showEnglish ? "Close" : "閉じる")
-                .bold()
-        })
-        .alert(showEnglish ? "Bar Visited!" : "バー訪問済み！", isPresented: $showingVisitedAlert) {
-            Button("OK") { }
+        .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showingImagePicker) {
+            ImagePicker(image: $inputImage)
+        }
+        .sheet(isPresented: $showingMap) {
+            if let location = getBarLocation() {
+                MapDetailView(location: location, barName: bar.name ?? "Unknown")
+            }
+        }
+        .alert(showEnglish ? "Delete Photo?" : "写真を削除しますか？", isPresented: $showingDeleteAlert) {
+            Button(showEnglish ? "Cancel" : "キャンセル", role: .cancel) { }
+            Button(showEnglish ? "Delete" : "削除", role: .destructive) {
+                deleteImage()
+            }
         } message: {
-            Text(showEnglish ?
-                "Great! This bar has been automatically marked as visited since you uploaded a photo." :
-                "素晴らしい！写真をアップロードしたため、このバーは自動的に訪問済みとしてマークされました。")
+            Text(showEnglish ? "This action cannot be undone." : "この操作は取り消せません。")
+        }
+        .onChange(of: inputImage) { oldValue, newValue in
+            if let newImage = newValue {
+                saveImage(newImage)
+            }
+        }
+        .onAppear {
+            notes = bar.notes ?? ""
+            setupImageUpdateListener()
         }
     }
     
-    private func saveNotes() {
-        bar.notes = notes
-        try? viewContext.save()
-    }
-    
-    private func findInMap() {
-        // Post notification to highlight this bar in the map
+    private func saveImage(_ image: UIImage) {
+        guard let uuid = bar.uuid else { return }
+        
+        ImageManager.saveImage(image, for: uuid)
+        
+        // Post notification
         NotificationCenter.default.post(
-            name: NSNotification.Name("HighlightBar"),
+            name: NSNotification.Name("ImageUpdated"),
             object: nil,
-            userInfo: ["barUUID": bar.uuid ?? ""]
+            userInfo: ["barUUID": uuid]
         )
-        presentationMode.wrappedValue.dismiss()
-    }
-}
-
-// Image management class
-class ImageManager {
-    // Get the documents directory path
-    static private func getDocumentsDirectory() -> URL {
-        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        
+        // Update refresh ID to force view update
+        refreshID = UUID()
+        
+        // Clear the input image
+        inputImage = nil
     }
     
-    // Save an image to the documents directory
-    static func saveImage(_ image: UIImage, for identifier: String) {
-        if let data = image.jpegData(compressionQuality: 0.8) {
-            let filename = getDocumentsDirectory().appendingPathComponent("\(identifier).jpg")
-            try? data.write(to: filename)
+    private func deleteImage() {
+        guard let uuid = bar.uuid else { return }
+        
+        ImageManager.deleteImage(for: uuid)
+        
+        // Post notification
+        NotificationCenter.default.post(
+            name: NSNotification.Name("ImageUpdated"),
+            object: nil,
+            userInfo: ["barUUID": uuid]
+        )
+        
+        // Update refresh ID
+        refreshID = UUID()
+    }
+    
+    private func setupImageUpdateListener() {
+        NotificationCenter.default.addObserver(
+            forName: NSNotification.Name("ImageUpdated"),
+            object: nil,
+            queue: .main
+        ) { notification in
+            if let uuid = notification.userInfo?["barUUID"] as? String,
+               uuid == bar.uuid {
+                refreshID = UUID()
+            }
         }
     }
     
-    // Load an image from the documents directory
-    static func loadImage(for identifier: String) -> UIImage? {
-        let filename = getDocumentsDirectory().appendingPathComponent("\(identifier).jpg")
-        return UIImage(contentsOfFile: filename.path)
+    private func getBarLocation() -> CLLocationCoordinate2D? {
+        // This should return the actual location based on your bar's row/column
+        // For now, returning a default Golden Gai location
+        // You should implement proper mapping based on bar.locationRow and bar.locationColumn
+        return CLLocationCoordinate2D(latitude: 35.6938, longitude: 139.7034)
     }
 }
 
-extension ImageManager {
-    // Get image from assets based on bar name
-    static func getAssetImage(for barName: String?) -> UIImage? {
-        guard let barName = barName else { return nil }
+// MARK: - Image Picker
+struct ImagePicker: UIViewControllerRepresentable {
+    @Binding var image: UIImage?
+    @Environment(\.dismiss) var dismiss
+    
+    func makeUIViewController(context: Context) -> PHPickerViewController {
+        var config = PHPickerConfiguration()
+        config.filter = .images
+        config.selectionLimit = 1
         
-        // Try to get image from English name first
-        if let englishName = BarNameTranslation.nameMap[barName],
-           let image = UIImage(named: englishName) {
-            return image
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = context.coordinator
+        return picker
+    }
+    
+    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class Coordinator: NSObject, PHPickerViewControllerDelegate {
+        let parent: ImagePicker
+        
+        init(_ parent: ImagePicker) {
+            self.parent = parent
         }
         
-        // Fallback to the original name
-        return UIImage(named: barName)
+        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+            // Immediately dismiss the picker
+            parent.dismiss()
+            
+            // Process the first result if available
+            guard let provider = results.first?.itemProvider else { return }
+            
+            if provider.canLoadObject(ofClass: UIImage.self) {
+                provider.loadObject(ofClass: UIImage.self) { image, error in
+                    if let error = error {
+                        print("Error loading image: \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    DispatchQueue.main.async {
+                        self.parent.image = image as? UIImage
+                    }
+                }
+            }
+        }
     }
 }
 
-extension BarDetailView {
-    // Function to get the appropriate image for the bar
-    func getBarImage() -> UIImage? {
-        // First try to get a saved image
-        if let uuid = bar.uuid, let savedImage = ImageManager.loadImage(for: uuid) {
-            return savedImage
+// MARK: - Map Detail View
+struct MapDetailView: View {
+    let location: CLLocationCoordinate2D
+    let barName: String
+    @Environment(\.dismiss) var dismiss
+    @AppStorage("showEnglish") var showEnglish = false
+    
+    var body: some View {
+        NavigationStack {
+            Map(position: .constant(.region(MKCoordinateRegion(
+                center: location,
+                span: MKCoordinateSpan(latitudeDelta: 0.002, longitudeDelta: 0.002)
+            )))) {
+                Marker(barName, coordinate: location)
+            }
+            .navigationTitle(barName)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(showEnglish ? "Close" : "閉じる") {
+                        dismiss()
+                    }
+                }
+            }
         }
-        
-        // Then try to get from assets using the name
-        return ImageManager.getAssetImage(for: bar.name)
     }
 }

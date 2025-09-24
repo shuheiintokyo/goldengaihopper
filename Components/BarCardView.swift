@@ -43,7 +43,7 @@ struct BarCardView: View {
                 .fill(uniqueColor)
                 .overlay(
                     RoundedRectangle(cornerRadius: 20)
-                        .stroke(Color.white.opacity(0.2))
+                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
                 )
             
             // Main content layout
@@ -52,29 +52,28 @@ struct BarCardView: View {
                 Spacer()
                     .frame(height: 25)
                 
-                // Image section - Fixed to prevent gaps and alignment issues
+                // Image section - Fixed frame that doesn't change
                 ZStack {
+                    // Background placeholder (always present)
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(uniqueColor.opacity(0.3))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
+                        )
+                    
+                    // Image on top (if available) - maintains aspect ratio
                     if let uuid = bar.uuid, let image = ImageManager.loadImage(for: uuid) {
-                        // Display actual uploaded image with proper aspect ratio
                         Image(uiImage: image)
                             .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(height: 320)
-                            .clipped()
+                            .aspectRatio(contentMode: .fit)  // Changed from .fill to .fit
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .background(Color.black.opacity(0.2))  // Dark background for letterboxing
                             .clipShape(RoundedRectangle(cornerRadius: 16))
-                            .id(refreshID)
-                    } else {
-                        // Empty placeholder - same size as image
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(uniqueColor.opacity(0.3))
-                            .frame(height: 320)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
-                            )
                             .id(refreshID)
                     }
                 }
+                .frame(height: 290)  // Fixed height for the container
                 .padding(.horizontal, 25)
                 
                 // Spacing between image and text
