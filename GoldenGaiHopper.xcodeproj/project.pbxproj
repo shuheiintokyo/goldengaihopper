@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0545C1F02E842D77008ABBD0 /* ImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0545C1EF2E842D6E008ABBD0 /* ImageManager.swift */; };
 		05542F022D8ECD6600E4BA8D /* BarCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05542F012D8ECD6100E4BA8D /* BarCardView.swift */; };
 		055549892D8D37AF0040C2E3 /* BarNameTranslation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055549882D8D37A80040C2E3 /* BarNameTranslation.swift */; };
 		057DE7322D90243600867B88 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057DE72F2D90243600867B88 /* LoginView.swift */; };
@@ -48,6 +49,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0545C1EF2E842D6E008ABBD0 /* ImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageManager.swift; sourceTree = "<group>"; };
 		05542F012D8ECD6100E4BA8D /* BarCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarCardView.swift; sourceTree = "<group>"; };
 		055549862D8D2BB80040C2E3 /* GoldenGaiHopperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GoldenGaiHopperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		055549872D8D2BB80040C2E3 /* GoldenGaiHopperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GoldenGaiHopperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -125,6 +127,7 @@
 		058D15872E83AC6F001FE94C /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				0545C1EF2E842D6E008ABBD0 /* ImageManager.swift */,
 				058D15882E83ACE5001FE94C /* RemoteDataService.swift */,
 				05CB04512D868EFF00B53437 /* DataImportService.swift */,
 				058D158E2E83CC36001FE94C /* BackgroundPreference.swift */,
@@ -293,6 +296,7 @@
 			files = (
 				058D158B2E83B16E001FE94C /* SettingsView.swift in Sources */,
 				05CB03742D85C3C800B53437 /* Bar+CoreDataClass.swift in Sources */,
+				0545C1F02E842D77008ABBD0 /* ImageManager.swift in Sources */,
 				05CB03752D85C3C800B53437 /* Bar+CoreDataProperties.swift in Sources */,
 				05CB04592D868EFF00B53437 /* BarDetailView.swift in Sources */,
 				058D158D2E83CBF2001FE94C /* CustomBackgroundImage.swift in Sources */,

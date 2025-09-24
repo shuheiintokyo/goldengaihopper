@@ -177,7 +177,7 @@ struct BarDetailView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showingImagePicker) {
-            ImagePicker(image: $inputImage)
+            ImagePickerView(image: $inputImage, isPresented: $showingImagePicker)
         }
         .sheet(isPresented: $showingMap) {
             if let location = getBarLocation() {
@@ -195,6 +195,7 @@ struct BarDetailView: View {
         .onChange(of: inputImage) { oldValue, newValue in
             if let newImage = newValue {
                 saveImage(newImage)
+                inputImage = nil  // Reset after saving
             }
         }
         .onAppear {
@@ -216,10 +217,9 @@ struct BarDetailView: View {
         )
         
         // Update refresh ID to force view update
-        refreshID = UUID()
-        
-        // Clear the input image
-        inputImage = nil
+        DispatchQueue.main.async {
+            self.refreshID = UUID()
+        }
     }
     
     private func deleteImage() {
@@ -259,10 +259,10 @@ struct BarDetailView: View {
     }
 }
 
-// MARK: - Image Picker
-struct ImagePicker: UIViewControllerRepresentable {
+// MARK: - Simplified Image Picker
+struct ImagePickerView: UIViewControllerRepresentable {
     @Binding var image: UIImage?
-    @Environment(\.dismiss) var dismiss
+    @Binding var isPresented: Bool
     
     func makeUIViewController(context: Context) -> PHPickerViewController {
         var config = PHPickerConfiguration()
@@ -281,30 +281,41 @@ struct ImagePicker: UIViewControllerRepresentable {
     }
     
     class Coordinator: NSObject, PHPickerViewControllerDelegate {
-        let parent: ImagePicker
+        let parent: ImagePickerView
         
-        init(_ parent: ImagePicker) {
+        init(_ parent: ImagePickerView) {
             self.parent = parent
         }
         
         func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-            // Immediately dismiss the picker
-            parent.dismiss()
+            // Dismiss the picker first
+            picker.dismiss(animated: true)
             
-            // Process the first result if available
-            guard let provider = results.first?.itemProvider else { return }
+            // Then process the image
+            guard let provider = results.first?.itemProvider else {
+                parent.isPresented = false
+                return
+            }
             
             if provider.canLoadObject(ofClass: UIImage.self) {
-                provider.loadObject(ofClass: UIImage.self) { image, error in
+                provider.loadObject(ofClass: UIImage.self) { [weak self] image, error in
                     if let error = error {
                         print("Error loading image: \(error.localizedDescription)")
+                        DispatchQueue.main.async {
+                            self?.parent.isPresented = false
+                        }
                         return
                     }
                     
                     DispatchQueue.main.async {
-                        self.parent.image = image as? UIImage
+                        if let image = image as? UIImage {
+                            self?.parent.image = image
+                        }
+                        self?.parent.isPresented = false
                     }
                 }
+            } else {
+                parent.isPresented = false
             }
         }
     }
