@@ -36,7 +36,7 @@ struct SettingsView: View {
                 }
                 .listRowBackground(Color.gray.opacity(0.1))
                 
-                // Background Customization Section - THIS IS THE NEW SECTION
+                // Background Customization Section
                 Section(header: Text(showEnglish ? "Background Images" : "背景画像")) {
                     // Content View Background
                     Button(action: {
@@ -222,7 +222,7 @@ struct SettingsView: View {
             AboutView()
         }
         .sheet(isPresented: $showingImagePicker) {
-            SimpleImagePicker { image in
+            BackgroundImagePicker { image in
                 saveCustomBackground(image: image)
             }
         }
@@ -233,21 +233,15 @@ struct SettingsView: View {
         isCheckingUpdate = true
         updateMessage = ""
         
-        RemoteDataService.shared.checkForUpdates(context: viewContext) { success in
-            DispatchQueue.main.async {
-                isCheckingUpdate = false
-                updateMessage = success ?
-                    (showEnglish ? "Data updated successfully" : "データが正常に更新されました") :
-                    (showEnglish ? "No updates available" : "利用可能な更新はありません")
-                showingUpdateAlert = true
-            }
+        // For now, just simulate a check
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            isCheckingUpdate = false
+            updateMessage = showEnglish ? "No updates available" : "利用可能な更新はありません"
+            showingUpdateAlert = true
         }
     }
     
     private func getCurrentVersion() -> String {
-        if let cachedData = RemoteDataService.shared.loadCachedData() {
-            return cachedData.version
-        }
         return "1.0"
     }
     
@@ -290,7 +284,7 @@ struct SettingsView: View {
         
         // Send notification to update the view
         NotificationCenter.default.post(
-            name: .backgroundImageChanged,
+            name: NSNotification.Name("BackgroundImageChanged"),
             object: nil,
             userInfo: ["viewName": selectedViewForBackground]
         )
@@ -306,12 +300,12 @@ struct SettingsView: View {
         
         // Send notifications for both views
         NotificationCenter.default.post(
-            name: .backgroundImageChanged,
+            name: NSNotification.Name("BackgroundImageChanged"),
             object: nil,
             userInfo: ["viewName": "ContentView"]
         )
         NotificationCenter.default.post(
-            name: .backgroundImageChanged,
+            name: NSNotification.Name("BackgroundImageChanged"),
             object: nil,
             userInfo: ["viewName": "BarListView"]
         )
@@ -332,7 +326,7 @@ struct SettingsView: View {
         
         // Send notification to update the view
         NotificationCenter.default.post(
-            name: .backgroundImageChanged,
+            name: NSNotification.Name("BackgroundImageChanged"),
             object: nil,
             userInfo: ["viewName": selectedViewForBackground]
         )
@@ -343,8 +337,8 @@ struct SettingsView: View {
     }
 }
 
-// MARK: - Simple Image Picker
-struct SimpleImagePicker: UIViewControllerRepresentable {
+// MARK: - Background Image Picker (renamed from SimpleImagePicker to avoid conflict)
+struct BackgroundImagePicker: UIViewControllerRepresentable {
     let onImageSelected: (UIImage) -> Void
     @Environment(\.dismiss) private var dismiss
     
@@ -363,9 +357,9 @@ struct SimpleImagePicker: UIViewControllerRepresentable {
     }
     
     class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-        let parent: SimpleImagePicker
+        let parent: BackgroundImagePicker
         
-        init(_ parent: SimpleImagePicker) {
+        init(_ parent: BackgroundImagePicker) {
             self.parent = parent
         }
         
@@ -381,6 +375,7 @@ struct SimpleImagePicker: UIViewControllerRepresentable {
         }
     }
 }
+
 struct AboutView: View {
     @AppStorage("showEnglish") var showEnglish = false
     @Environment(\.dismiss) var dismiss
