@@ -38,48 +38,50 @@ struct BarCardView: View {
     
     var body: some View {
         ZStack {
-            // Card background with rounded corners and border
-            RoundedRectangle(cornerRadius: 22)
+            // Clean card background with sharp border
+            RoundedRectangle(cornerRadius: 20)
                 .fill(uniqueColor)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 22)
-                        .strokeBorder(Color.white.opacity(0.3), lineWidth: 1.5)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Color.white.opacity(0.15), lineWidth: 0.5)
                 )
             
             // Main content layout
             VStack(spacing: 0) {
                 // Top spacing
                 Spacer()
-                    .frame(height: 20)
+                    .frame(height: 25)
                 
-                // Image section - expanded to take more space
-                if let uuid = bar.uuid, let image = ImageManager.loadImage(for: uuid) {
-                    // Display actual uploaded image
-                    Image(uiImage: image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(height: 320) // Expanded from 220 to 320
-                        .padding(.horizontal, 25)
-                        .clipShape(RoundedRectangle(cornerRadius: 18))
-                        .id(refreshID)
-                } else {
-                    // Empty placeholder - just colored rectangle without text
-                    RoundedRectangle(cornerRadius: 18)
-                        .fill(uniqueColor.opacity(0.3)) // Lighter version of the card color
-                        .frame(height: 320) // Same size as image
-                        .padding(.horizontal, 25)
-                        .id(refreshID)
+                // Image section - Fixed to prevent gaps and alignment issues
+                ZStack {
+                    if let uuid = bar.uuid, let image = ImageManager.loadImage(for: uuid) {
+                        // Display actual uploaded image with proper aspect ratio
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(height: 320)
+                            .clipped()
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                            .id(refreshID)
+                    } else {
+                        // Empty placeholder - same size as image
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(uniqueColor.opacity(0.3))
+                            .frame(height: 320)
+                            .id(refreshID)
+                    }
                 }
+                .padding(.horizontal, 25)
                 
                 // Spacing between image and text
                 Spacer()
-                    .frame(height: 15)
+                    .frame(height: 20)
                 
                 // Text section - consistent styling regardless of image presence
                 VStack(spacing: 12) {
                     // Main bar name
                     Text(bar.name ?? "Unknown")
-                        .font(.system(size: 24, weight: .bold))
+                        .font(.system(size: 22, weight: .bold))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                         .lineLimit(1)
@@ -87,7 +89,7 @@ struct BarCardView: View {
                     // English translation if available
                     if let englishName = englishName {
                         Text(englishName)
-                            .font(.system(size: 16, weight: .medium))
+                            .font(.system(size: 15, weight: .medium))
                             .foregroundColor(.white.opacity(0.9))
                             .multilineTextAlignment(.center)
                             .lineLimit(1)
@@ -95,30 +97,32 @@ struct BarCardView: View {
                     
                     // Visited status badge
                     if bar.isVisited {
-                        HStack(spacing: 10) {
+                        HStack(spacing: 8) {
                             Image(systemName: "checkmark.circle.fill")
-                                .font(.system(size: 18))
+                                .font(.system(size: 16))
                                 .foregroundColor(.white)
                             
                             Text("VISITED")
-                                .font(.system(size: 14, weight: .bold))
+                                .font(.system(size: 12, weight: .bold))
                                 .foregroundColor(.white)
                         }
-                        .padding(.vertical, 6)
-                        .padding(.horizontal, 16)
+                        .padding(.vertical, 5)
+                        .padding(.horizontal, 14)
                         .background(
                             Capsule()
-                                .fill(Color.black.opacity(0.2))
+                                .fill(Color.black.opacity(0.25))
                         )
-                        .padding(.top, 8)
+                        .padding(.top, 6)
                     }
                 }
                 .padding(.horizontal, 25)
                 
                 // Bottom spacing
                 Spacer()
+                    .frame(height: 25)
             }
         }
+        .clipShape(RoundedRectangle(cornerRadius: 20))
         // Listen for image update notifications
         .onAppear {
             imageUpdateSubscription = NotificationCenter.default.publisher(

@@ -17,54 +17,55 @@ struct ContentView: View {
         TabView(selection: $selection) {
             // Home tab with horizontal scrolling cards
             NavigationStack {
-                ZStack {
-                    // Custom background image that user can control
-                    DynamicBackgroundImage(viewName: "ContentView", defaultImageName: "ContentBackground")
-                        .ignoresSafeArea(.all, edges: .top) // Only ignore top safe area, not bottom
-                    
-                    // Semi-transparent overlay for better readability
-                    Color.black.opacity(0.3)
-                        .ignoresSafeArea(.all, edges: .top) // Only ignore top safe area, not bottom
-                    
-                    VStack(spacing: 0) {
-                        // Title
-                        Text(showEnglish ? "Golden Gai Bars" : "ゴールデン街バー")
-                            .font(.system(size: 46, weight: .black))
-                            .foregroundColor(.white)
-                            .shadow(radius: 5)
-                            .padding(.top, 30)
-                            .padding(.bottom, 20)
+                GeometryReader { geometry in
+                    ZStack {
+                        // Custom background image that user can control
+                        DynamicBackgroundImage(viewName: "ContentView", defaultImageName: "ContentBackground")
+                            .ignoresSafeArea(.all, edges: .top)
+                            .clipped() // Prevent background from affecting layout
                         
-                        // Scrolling cards with balanced height
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 25) {
-                                Spacer(minLength: 5)
-                                
-                                ForEach(bars, id: \.uuid) { bar in
-                                    BarCardView(bar: bar)
-                                        .frame(width: UIScreen.main.bounds.width * 0.85)
-                                        .frame(height: 480)
-                                        .onTapGesture {
-                                            selectedBar = bar
-                                        }
-                                        .scrollTransition { content, phase in
-                                            content
-                                                .opacity(phase.isIdentity ? 1.0 : 0.6)
-                                                .scaleEffect(phase.isIdentity ? 1.0 : 0.9)
-                                                .offset(y: phase.isIdentity ? 0 : 15)
-                                                .blur(radius: phase.isIdentity ? 0 : 1)
-                                        }
+                        // Semi-transparent overlay for better readability
+                        Color.black.opacity(0.3)
+                            .ignoresSafeArea(.all, edges: .top)
+                        
+                        VStack(spacing: 0) {
+                            // Title
+                            Text(showEnglish ? "Golden Gai Bars" : "ゴールデン街バー")
+                                .font(.system(size: 46, weight: .black))
+                                .foregroundColor(.white)
+                                .shadow(radius: 5)
+                                .padding(.top, 30)
+                                .padding(.bottom, 20)
+                            
+                            // Scrolling cards with balanced height
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                LazyHStack(spacing: 0) {
+                                    ForEach(bars.indices, id: \.self) { index in
+                                        let bar = bars[index]
+                                        BarCardView(bar: bar)
+                                            .frame(width: geometry.size.width * 0.85)
+                                            .frame(height: 480)
+                                            .padding(.horizontal, geometry.size.width * 0.075) // 7.5% on each side
+                                            .onTapGesture {
+                                                selectedBar = bar
+                                            }
+                                            .scrollTransition { content, phase in
+                                                content
+                                                    .opacity(phase.isIdentity ? 1.0 : 0.6)
+                                                    .scaleEffect(phase.isIdentity ? 1.0 : 0.9)
+                                                    .offset(y: phase.isIdentity ? 0 : 15)
+                                                    .blur(radius: phase.isIdentity ? 0 : 1)
+                                            }
+                                    }
                                 }
-                                
-                                Spacer(minLength: 20)
+                                .scrollTargetLayout()
                             }
-                            .scrollTargetLayout()
-                            .padding(.vertical, 10)
+                            .scrollTargetBehavior(.viewAligned)
+                            .frame(height: geometry.size.height * 0.65)
+                            .scrollIndicators(.hidden)
+                            
+                            Spacer()
                         }
-                        .scrollTargetBehavior(.viewAligned)
-                        .frame(height: UIScreen.main.bounds.height * 0.65)
-                        
-                        Spacer()
                     }
                 }
                 .navigationBarHidden(true)

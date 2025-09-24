@@ -7,17 +7,23 @@ struct DynamicBackgroundImage: View {
     @State private var customImage: UIImage?
     
     var body: some View {
-        Group {
-            if let customImage = customImage {
-                // Display custom image
-                Image(uiImage: customImage)
-                    .resizable()
-                    .scaledToFill()
-            } else {
-                // Display default image
-                Image(defaultImageName)
-                    .resizable()
-                    .scaledToFill()
+        GeometryReader { geometry in
+            Group {
+                if let customImage = customImage {
+                    // Display custom image with proper constraints
+                    Image(uiImage: customImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                        .clipped()
+                } else {
+                    // Display default image with proper constraints
+                    Image(defaultImageName)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                        .clipped()
+                }
             }
         }
         .onAppear {
