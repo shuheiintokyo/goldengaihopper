@@ -16,6 +16,9 @@ struct BarDetailView: View {
     @State private var showingMap = false
     @State private var notes: String = ""
     
+    // Callback to dismiss the sheet from ContentView
+    var onImageUploaded: (() -> Void)?
+    
     // Get English translation if available
     private var englishName: String? {
         guard let japaneseName = bar.name,
@@ -242,6 +245,11 @@ struct BarDetailView: View {
         
         refreshID = UUID()
         inputImage = nil
+        
+        // Auto-dismiss the sheet after successful image upload
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            dismiss()
+        }
     }
     
     private func deleteImage() {

@@ -52,7 +52,7 @@ struct BarCardView: View {
                 Spacer()
                     .frame(height: 25)
                 
-                // Image section - Fixed frame that doesn't change
+                // Image section - Fixed frame that completely fills with image
                 ZStack {
                     // Background placeholder (always present)
                     RoundedRectangle(cornerRadius: 16)
@@ -62,13 +62,13 @@ struct BarCardView: View {
                                 .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
                         )
                     
-                    // Image on top (if available) - maintains aspect ratio
+                    // Image on top (if available) - fills the entire frame
                     if let uuid = bar.uuid, let image = ImageManager.loadImage(for: uuid) {
                         Image(uiImage: image)
                             .resizable()
-                            .aspectRatio(contentMode: .fit)  // Changed from .fill to .fit
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(Color.black.opacity(0.2))  // Dark background for letterboxing
+                            .aspectRatio(contentMode: .fill)  // Changed from .fit to .fill
+                            .frame(width: UIScreen.main.bounds.width * 0.85 - 50, height: 290)  // Exact dimensions
+                            .clipped()  // Clips the overflow to prevent spilling outside
                             .clipShape(RoundedRectangle(cornerRadius: 16))
                             .id(refreshID)
                     }

@@ -38,8 +38,11 @@ struct LoginView: View {
                 
                 // Japanese button first
                 Button(action: {
+                    print("🇯🇵 Japanese selected - setting showEnglish to false")
                     showEnglish = false
+                    print("🔑 Setting isLoggedIn to true")
                     isLoggedIn = true
+                    print("✅ Login completed with Japanese language")
                 }) {
                     Text("日本語")
                         .foregroundColor(.white)
@@ -52,8 +55,11 @@ struct LoginView: View {
                 
                 // English button second
                 Button(action: {
+                    print("🇺🇸 English selected - setting showEnglish to true")
                     showEnglish = true
+                    print("🔑 Setting isLoggedIn to true")
                     isLoggedIn = true
+                    print("✅ Login completed with English language")
                 }) {
                     Text("English")
                         .foregroundColor(.white)
@@ -71,6 +77,8 @@ struct LoginView: View {
         }
         .ignoresSafeArea() // Ensure full screen coverage
         .onAppear {
+            print("📱 LoginView appeared - Current isLoggedIn: \(isLoggedIn)")
+            
             // Start the animation sequence
             withAnimation(.spring(response: 0.8, dampingFraction: 0.6, blendDuration: 0).delay(3)) {
                 imageOffset = 0 // Move to center

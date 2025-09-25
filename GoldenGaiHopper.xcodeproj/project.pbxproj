@@ -13,7 +13,6 @@
 		057DE7322D90243600867B88 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057DE72F2D90243600867B88 /* LoginView.swift */; };
 		058D15892E83ACED001FE94C /* RemoteDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058D15882E83ACE5001FE94C /* RemoteDataService.swift */; };
 		058D158B2E83B16E001FE94C /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058D158A2E83B169001FE94C /* SettingsView.swift */; };
-		058D158D2E83CBF2001FE94C /* CustomBackgroundImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058D158C2E83CBF0001FE94C /* CustomBackgroundImage.swift */; };
 		058D158F2E83CC39001FE94C /* BackgroundPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058D158E2E83CC36001FE94C /* BackgroundPreference.swift */; };
 		058D15912E83D1EB001FE94C /* DynamicBackgroundImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058D15902E83D1E9001FE94C /* DynamicBackgroundImage.swift */; };
 		05CB03312D85B8AB00B53437 /* golden-gai-json-data.json in Resources */ = {isa = PBXBuildFile; fileRef = 05CB03302D85B8AB00B53437 /* golden-gai-json-data.json */; };
@@ -57,7 +56,6 @@
 		057DE72F2D90243600867B88 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		058D15882E83ACE5001FE94C /* RemoteDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteDataService.swift; sourceTree = "<group>"; };
 		058D158A2E83B169001FE94C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		058D158C2E83CBF0001FE94C /* CustomBackgroundImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBackgroundImage.swift; sourceTree = "<group>"; };
 		058D158E2E83CC36001FE94C /* BackgroundPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundPreference.swift; sourceTree = "<group>"; };
 		058D15902E83D1E9001FE94C /* DynamicBackgroundImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicBackgroundImage.swift; sourceTree = "<group>"; };
 		05CB03302D85B8AB00B53437 /* golden-gai-json-data.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "golden-gai-json-data.json"; sourceTree = "<group>"; };
@@ -119,7 +117,7 @@
 			children = (
 				058D15902E83D1E9001FE94C /* DynamicBackgroundImage.swift */,
 				05542F012D8ECD6100E4BA8D /* BarCardView.swift */,
-				058D158C2E83CBF0001FE94C /* CustomBackgroundImage.swift */,
+				055549882D8D37A80040C2E3 /* BarNameTranslation.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -140,7 +138,6 @@
 			children = (
 				058D15862E83AC62001FE94C /* Components */,
 				058D15852E83AC46001FE94C /* Views */,
-				055549882D8D37A80040C2E3 /* BarNameTranslation.swift */,
 				058D15872E83AC6F001FE94C /* Utilities */,
 				05CB03722D85C3C800B53437 /* Bar+CoreDataClass.swift */,
 				05CB03732D85C3C800B53437 /* Bar+CoreDataProperties.swift */,
@@ -299,7 +296,6 @@
 				0545C1F02E842D77008ABBD0 /* ImageManager.swift in Sources */,
 				05CB03752D85C3C800B53437 /* Bar+CoreDataProperties.swift in Sources */,
 				05CB04592D868EFF00B53437 /* BarDetailView.swift in Sources */,
-				058D158D2E83CBF2001FE94C /* CustomBackgroundImage.swift in Sources */,
 				058D158F2E83CC39001FE94C /* BackgroundPreference.swift in Sources */,
 				05CB045A2D868EFF00B53437 /* BarListView.swift in Sources */,
 				05CB045B2D868EFF00B53437 /* ContentView.swift in Sources */,

@@ -11,7 +11,8 @@ struct ContentView: View {
     @State private var selectedBar: Bar?
     @Environment(\.colorScheme) private var colorScheme
     @AppStorage("showEnglish") var showEnglish = false
-    @AppStorage("isLoggedIn") var isLoggedIn = true
+    // REMOVED: @AppStorage("isLoggedIn") var isLoggedIn = true
+    // This was conflicting with the main app's isLoggedIn setting
     
     var body: some View {
         TabView(selection: $selection) {

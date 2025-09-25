@@ -64,13 +64,19 @@ struct BarListView: View {
                     .padding()
                 } else {
                     List {
-                        // Toggle section
+                        // Toggle section - FIXED: Custom styled toggle
                         Section {
                             HStack {
                                 Spacer()
-                                Toggle(showEnglish ? "Show All Bars" : "全てのバーを表示", isOn: $showingAllBars)
-                                    .padding(.vertical, 8)
-                                    .tint(Color.blue)
+                                HStack {
+                                    Text(showEnglish ? "Show All Bars" : "全てのバーを表示")
+                                        .foregroundColor(.white)  // FIXED: Explicit white color
+                                        .font(.body)
+                                    
+                                    Toggle("", isOn: $showingAllBars)  // FIXED: Empty label, custom text above
+                                        .tint(Color.blue)
+                                }
+                                .padding(.vertical, 8)
                                 Spacer()
                             }
                         }
@@ -115,6 +121,14 @@ struct BarListView: View {
         }
         .navigationTitle(showEnglish ? "Golden Gai Bars" : "ゴールデン街バー")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text(showEnglish ? "Golden Gai Bars" : "ゴールデン街バー")
+                    .foregroundColor(.white)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+            }
+        }
         .navigationDestination(for: Bar.self) { bar in
             BarDetailView(bar: bar)
         }

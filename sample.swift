@@ -5,7 +5,7 @@ import CoreData
 struct GoldenPeaceApp: App {
     let persistenceController = PersistenceController.shared
     let dataImportService: DataImportService
-    @AppStorage("isLoggedIn") var isLoggedIn = false
+    @AppStorage("isLoggedIn") var isLoggedIn = false  // This defaults to false on first install
     
     init() {
         dataImportService = DataImportService(persistenceController: persistenceController)
