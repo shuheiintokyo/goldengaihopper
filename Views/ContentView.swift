@@ -25,23 +25,32 @@ struct ContentView: View {
                     // Color.black.opacity(0.3) was here
                     
                     VStack(spacing: 0) {
-                        // Title
+                        // Title - Adaptive for iPad/iPhone
+                        let isIPad = UIDevice.current.userInterfaceIdiom == .pad
                         Text(showEnglish ? "Golden Gai Bars" : "ゴールデン街バー")
-                            .font(.system(size: 46, weight: .black))
+                            .font(.system(size: isIPad ? 64 : 46, weight: .black))
                             .foregroundColor(.white)
                             .shadow(radius: 5)
-                            .padding(.top, 60)
-                            .padding(.bottom, 20)
+                            .padding(.top, isIPad ? 80 : 60)
+                            .padding(.bottom, isIPad ? 30 : 20)
                         
-                        // Scrolling cards with PEEK effect
+                        // Scrolling cards with PEEK effect - Adaptive for iPad/iPhone
                         GeometryReader { geometry in
+                            let isIPad = UIDevice.current.userInterfaceIdiom == .pad
+                            let cardWidth = isIPad ?
+                                min(geometry.size.width * 0.45, 400) : // iPad: smaller percentage or max 400pt
+                                geometry.size.width * 0.78 // iPhone: 78% of screen
+                            let cardHeight: CGFloat = isIPad ? 550 : 450
+                            let horizontalPadding: CGFloat = isIPad ? 40 : 20
+                            let cardSpacing: CGFloat = isIPad ? 25 : 15
+                            
                             ScrollView(.horizontal, showsIndicators: false) {
-                                LazyHStack(spacing: 15) {
+                                LazyHStack(spacing: cardSpacing) {
                                     ForEach(bars.indices, id: \.self) { index in
                                         let bar = bars[index]
-                                        BarCardView(bar: bar)
-                                            .frame(width: geometry.size.width * 0.78)
-                                            .frame(height: 450)
+                                        BarCardView(bar: bar, isIPad: isIPad)
+                                            .frame(width: cardWidth)
+                                            .frame(height: cardHeight)
                                             .onTapGesture {
                                                 selectedBar = bar
                                             }
@@ -55,7 +64,7 @@ struct ContentView: View {
                                     }
                                 }
                                 .scrollTargetLayout()
-                                .padding(.horizontal, 20)
+                                .padding(.horizontal, horizontalPadding)
                             }
                             .scrollTargetBehavior(.viewAligned)
                             .scrollIndicators(.hidden)
@@ -288,7 +297,7 @@ struct BarSearchView: View {
                 }
                 
                 Image(systemName: "chevron.right")
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondary)
                     .font(.caption)
             }
             .padding()
