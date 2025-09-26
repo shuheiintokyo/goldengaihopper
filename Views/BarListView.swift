@@ -25,11 +25,10 @@ struct BarListView: View {
         ZStack(alignment: .top) {
             // Custom background image that user can control
             DynamicBackgroundImage(viewName: "BarListView", defaultImageName: "BarListBackground")
-                .ignoresSafeArea()  // Ignore ALL safe areas
+                .ignoresSafeArea()
             
-            // Semi-transparent overlay
-            Color.black.opacity(0.4)
-                .ignoresSafeArea()  // Ignore ALL safe areas
+            // REMOVED the extra dark overlay that was making it darker than other views
+            // Color.black.opacity(0.4) was here - this was causing the darkness
             
             Group {
                 if visitedBars.isEmpty && !showingAllBars {
@@ -38,16 +37,19 @@ struct BarListView: View {
                         Image(systemName: "checkmark.circle")
                             .font(.system(size: 60))
                             .foregroundColor(.white)
+                            .shadow(radius: 2)
                         
                         Text(showEnglish ? "No Visited Bars Yet" : "まだ訪問したバーがありません")
                             .font(.title2)
                             .fontWeight(.medium)
                             .foregroundColor(.white)
+                            .shadow(radius: 2)
                         
                         Text(showEnglish ? "Visit bars to see them appear here" : "バーを訪問するとここに表示されます")
                             .font(.subheadline)
-                            .foregroundColor(.white.opacity(0.8))
+                            .foregroundColor(.white.opacity(0.9))
                             .multilineTextAlignment(.center)
+                            .shadow(radius: 1)
                         
                         Button(action: {
                             showingAllBars = true
@@ -64,16 +66,16 @@ struct BarListView: View {
                     .padding()
                 } else {
                     List {
-                        // Toggle section - FIXED: Custom styled toggle
+                        // Toggle section
                         Section {
                             HStack {
                                 Spacer()
                                 HStack {
                                     Text(showEnglish ? "Show All Bars" : "全てのバーを表示")
-                                        .foregroundColor(.white)  // FIXED: Explicit white color
+                                        .foregroundColor(.white)
                                         .font(.body)
                                     
-                                    Toggle("", isOn: $showingAllBars)  // FIXED: Empty label, custom text above
+                                    Toggle("", isOn: $showingAllBars)
                                         .tint(Color.blue)
                                 }
                                 .padding(.vertical, 8)
@@ -82,7 +84,7 @@ struct BarListView: View {
                         }
                         .listRowBackground(
                             RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.white.opacity(0.1))
+                                .fill(Color.black.opacity(0.3))
                                 .padding(.horizontal, 4)
                         )
                         
@@ -104,7 +106,7 @@ struct BarListView: View {
                                 }
                                 .listRowBackground(
                                     RoundedRectangle(cornerRadius: 10)
-                                        .fill(bar.isVisited ? Color.green.opacity(0.2) : Color.white.opacity(0.1))
+                                        .fill(bar.isVisited ? Color.green.opacity(0.3) : Color.black.opacity(0.3))
                                         .padding(.vertical, 2)
                                         .padding(.horizontal, 4)
                                 )
@@ -114,7 +116,7 @@ struct BarListView: View {
                     .listStyle(PlainListStyle())
                     .scrollContentBackground(.hidden)
                     .frame(maxWidth: .infinity)
-                    .padding(.top, 44) // Add padding for status bar area
+                    .padding(.top, 44)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -188,29 +190,25 @@ struct BarRowView: View {
             Image(systemName: bar.isVisited ? "checkmark.circle.fill" : "circle")
                 .foregroundColor(bar.isVisited ? .green : .white.opacity(0.6))
                 .font(.title2)
-                .frame(width: 24, height: 24) // Fixed width to prevent shifting
+                .frame(width: 24, height: 24)
             
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     if showEnglish {
                         Text(BarNameTranslation.nameMap[bar.name ?? ""] ?? bar.name ?? "Unknown")
                             .font(.system(size: 18, weight: .medium))
-                            .lineLimit(2) // Allow 2 lines for longer names
+                            .lineLimit(2)
                             .foregroundColor(.white)
                             .multilineTextAlignment(.leading)
                     } else {
                         Text(bar.name ?? "不明")
                             .font(.system(size: 18, weight: .medium))
-                            .lineLimit(2) // Allow 2 lines for longer names
+                            .lineLimit(2)
                             .foregroundColor(.white)
                             .multilineTextAlignment(.leading)
                     }
                     Spacer()
                 }
-                
-                Text("Row \(bar.locationRow), Col \(bar.locationColumn)")
-                    .font(.caption)
-                    .foregroundColor(.white.opacity(0.7))
                 
                 if let notes = bar.notes, !notes.isEmpty {
                     Text(notes)
@@ -226,10 +224,10 @@ struct BarRowView: View {
             Image(systemName: "chevron.right")
                 .foregroundColor(.white.opacity(0.5))
                 .font(.system(size: 14))
-                .frame(width: 14, height: 14) // Fixed size
+                .frame(width: 14, height: 14)
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 8)
-        .contentShape(Rectangle()) // Make entire row tappable
+        .contentShape(Rectangle())
     }
 }
