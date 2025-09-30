@@ -10,6 +10,8 @@ struct BarDetailView: View {
     @AppStorage("showEnglish") var showEnglish = false
     
     @State private var showingImagePicker = false
+    @State private var showingCamera = false
+    @State private var showingImageSourceAlert = false  // NEW: Alert to choose source
     @State private var inputImage: UIImage?
     @State private var refreshID = UUID()
     @State private var showingDeleteAlert = false
@@ -34,7 +36,7 @@ struct BarDetailView: View {
             VStack(spacing: 20) {
                 headerSection
                 imageSection
-                addPhotoButton
+                addPhotoButton  // This now shows options
                 statusSection
                 mapButton
                 notesSection
@@ -45,7 +47,10 @@ struct BarDetailView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showingImagePicker) {
-            SimpleImagePicker(image: $inputImage, isPresented: $showingImagePicker)
+            ImagePickerView(image: $inputImage, sourceType: .photoLibrary)
+        }
+        .sheet(isPresented: $showingCamera) {
+            ImagePickerView(image: $inputImage, sourceType: .camera)
         }
         .sheet(isPresented: $showingMap) {
             if let location = getBarLocation() {
@@ -59,6 +64,25 @@ struct BarDetailView: View {
             }
         } message: {
             Text(showEnglish ? "This action cannot be undone." : "この操作は取り消せません。")
+        }
+        .confirmationDialog(
+            showEnglish ? "Add Photo" : "写真を追加",
+            isPresented: $showingImageSourceAlert,
+            titleVisibility: .visible
+        ) {
+            Button(action: {
+                showingCamera = true
+            }) {
+                Label(showEnglish ? "Take Photo" : "写真を撮る", systemImage: "camera")
+            }
+            
+            Button(action: {
+                showingImagePicker = true
+            }) {
+                Label(showEnglish ? "Choose from Library" : "ライブラリから選択", systemImage: "photo.on.rectangle")
+            }
+            
+            Button(showEnglish ? "Cancel" : "キャンセル", role: .cancel) { }
         }
         .onChange(of: inputImage) { oldValue, newValue in
             if let newImage = newValue {
@@ -120,10 +144,10 @@ struct BarDetailView: View {
     
     private var addPhotoButton: some View {
         Button(action: {
-            showingImagePicker = true
+            showingImageSourceAlert = true  // Show options instead of directly opening picker
         }) {
             HStack {
-                Image(systemName: "photo")
+                Image(systemName: "camera.fill")
                 Text(showEnglish ? "Add Photo" : "写真を追加")
             }
             .frame(maxWidth: .infinity)
@@ -284,50 +308,54 @@ struct BarDetailView: View {
     }
 }
 
-// MARK: - Simple Image Picker
-struct SimpleImagePicker: UIViewControllerRepresentable {
+// MARK: - Universal Image Picker (Camera + Photo Library)
+struct ImagePickerView: UIViewControllerRepresentable {
     @Binding var image: UIImage?
-    @Binding var isPresented: Bool
+    @Environment(\.dismiss) private var dismiss
     
-    func makeUIViewController(context: Context) -> PHPickerViewController {
-        var config = PHPickerConfiguration()
-        config.filter = .images
-        config.selectionLimit = 1
-        
-        let picker = PHPickerViewController(configuration: config)
+    let sourceType: UIImagePickerController.SourceType
+    
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
         picker.delegate = context.coordinator
+        picker.sourceType = sourceType
+        picker.allowsEditing = true
+        
+        // Check camera availability
+        if sourceType == .camera && !UIImagePickerController.isSourceTypeAvailable(.camera) {
+            print("⚠️ Camera not available on this device")
+        }
+        
         return picker
     }
     
-    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
     
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
     
-    class Coordinator: NSObject, PHPickerViewControllerDelegate {
-        let parent: SimpleImagePicker
+    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+        let parent: ImagePickerView
         
-        init(_ parent: SimpleImagePicker) {
+        init(_ parent: ImagePickerView) {
             self.parent = parent
         }
         
-        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-            // Immediately dismiss by setting isPresented to false
-            parent.isPresented = false
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+            // Dismiss first
+            parent.dismiss()
             
-            // Process image if selected
-            if let provider = results.first?.itemProvider {
-                if provider.canLoadObject(ofClass: UIImage.self) {
-                    provider.loadObject(ofClass: UIImage.self) { image, _ in
-                        if let image = image as? UIImage {
-                            DispatchQueue.main.async {
-                                self.parent.image = image
-                            }
-                        }
-                    }
-                }
+            // Then process the image
+            if let editedImage = info[.editedImage] as? UIImage {
+                parent.image = editedImage
+            } else if let originalImage = info[.originalImage] as? UIImage {
+                parent.image = originalImage
             }
+        }
+        
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            parent.dismiss()
         }
     }
 }

@@ -1,0 +1,5 @@
+/* Camera Permission */
+"NSCameraUsageDescription" = "We need camera access to take photos of bars you visit";
+
+/* Photo Library Permission */
+"NSPhotoLibraryUsageDescription" = "We need photo library access to select photos of bars you visit";

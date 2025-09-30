@@ -15,6 +15,7 @@
 		058D158B2E83B16E001FE94C /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058D158A2E83B169001FE94C /* SettingsView.swift */; };
 		058D158F2E83CC39001FE94C /* BackgroundPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058D158E2E83CC36001FE94C /* BackgroundPreference.swift */; };
 		058D15912E83D1EB001FE94C /* DynamicBackgroundImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058D15902E83D1E9001FE94C /* DynamicBackgroundImage.swift */; };
+		05B992ED2E8B5D43005E913E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 05B992EC2E8B5D43005E913E /* InfoPlist.strings */; };
 		05CB03312D85B8AB00B53437 /* golden-gai-json-data.json in Resources */ = {isa = PBXBuildFile; fileRef = 05CB03302D85B8AB00B53437 /* golden-gai-json-data.json */; };
 		05CB03742D85C3C800B53437 /* Bar+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CB03722D85C3C800B53437 /* Bar+CoreDataClass.swift */; };
 		05CB03752D85C3C800B53437 /* Bar+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CB03732D85C3C800B53437 /* Bar+CoreDataProperties.swift */; };
@@ -58,6 +59,9 @@
 		058D158A2E83B169001FE94C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		058D158E2E83CC36001FE94C /* BackgroundPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundPreference.swift; sourceTree = "<group>"; };
 		058D15902E83D1E9001FE94C /* DynamicBackgroundImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicBackgroundImage.swift; sourceTree = "<group>"; };
+		05B992E42E8B5B55005E913E /* GoldenGaiHopper-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoldenGaiHopper-Info.plist"; sourceTree = "<group>"; };
+		05B992EB2E8B5D43005E913E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		05B992EE2E8B5D45005E913E /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		05CB03302D85B8AB00B53437 /* golden-gai-json-data.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "golden-gai-json-data.json"; sourceTree = "<group>"; };
 		05CB03722D85C3C800B53437 /* Bar+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bar+CoreDataClass.swift"; sourceTree = "<group>"; };
 		05CB03732D85C3C800B53437 /* Bar+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bar+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -136,6 +140,8 @@
 		05CB02F12D85B73A00B53437 = {
 			isa = PBXGroup;
 			children = (
+				05B992EC2E8B5D43005E913E /* InfoPlist.strings */,
+				05B992E42E8B5B55005E913E /* GoldenGaiHopper-Info.plist */,
 				058D15862E83AC62001FE94C /* Components */,
 				058D15852E83AC46001FE94C /* Views */,
 				058D15872E83AC6F001FE94C /* Utilities */,
@@ -244,6 +250,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ja,
 			);
 			mainGroup = 05CB02F12D85B73A00B53437;
 			minimizedProjectReferenceProxies = 1;
@@ -265,6 +272,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				05CB04202D867B7300B53437 /* .gitignore  in Resources */,
+				05B992ED2E8B5D43005E913E /* InfoPlist.strings in Resources */,
 				05CB04612D868EFF00B53437 /* Assets.xcassets in Resources */,
 				05CB03312D85B8AB00B53437 /* golden-gai-json-data.json in Resources */,
 			);
@@ -340,6 +348,18 @@
 			targetProxy = 05CB031A2D85B73C00B53437 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		05B992EC2E8B5D43005E913E /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				05B992EB2E8B5D43005E913E /* en */,
+				05B992EE2E8B5D45005E913E /* ja */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		05CB03212D85B73C00B53437 /* Debug */ = {
@@ -471,10 +491,15 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				ASSETCATALOG_WARNINGS = NO;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "GoldenGaiHopper-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "";
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need camera access to take photos of bars you visit";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need photo library access to select photos of bars you visit";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -484,7 +509,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = shuheikinugasa.GoldenGaiHopper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -501,10 +526,15 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				ASSETCATALOG_WARNINGS = NO;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "GoldenGaiHopper-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "";
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need camera access to take photos of bars you visit";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need photo library access to select photos of bars you visit";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -514,7 +544,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = shuheikinugasa.GoldenGaiHopper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

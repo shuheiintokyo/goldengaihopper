@@ -1,0 +1,5 @@
+/* カメラの許可 */
+"NSCameraUsageDescription" = "訪問したバーの写真を撮るためにカメラへのアクセスが必要です";
+
+/* フォトライブラリの許可 */
+"NSPhotoLibraryUsageDescription" = "訪問したバーの写真を選択するためにフォトライブラリへのアクセスが必要です";
