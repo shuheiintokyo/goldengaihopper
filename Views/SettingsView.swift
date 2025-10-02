@@ -7,6 +7,7 @@ struct SettingsView: View {
     @AppStorage("enableLiquidGlass") var enableLiquidGlass = false
     @State private var showingLogoutAlert = false
     @State private var showingAbout = false
+    @State private var showingAppGuide = false  // Added this missing state variable
     @State private var showingUpdateAlert = false
     @State private var updateMessage = ""
     @State private var isCheckingUpdate = false
@@ -198,6 +199,24 @@ struct SettingsView: View {
                 }
                 .listRowBackground(Color.gray.opacity(0.1))
                 
+                // How to Use Section - ADDED THIS SECTION
+                Section(header: Text(showEnglish ? "How to Use" : "使い方ガイド")) {
+                    Button(action: {
+                        showingAppGuide = true
+                    }) {
+                        HStack {
+                            Image(systemName: "questionmark.circle")
+                                .foregroundColor(.blue)
+                            Text(showEnglish ? "App Guide" : "アプリガイド")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+                .listRowBackground(Color.gray.opacity(0.1))
+                
                 // Account Section
                 Section {
                     Button(action: {
@@ -252,6 +271,9 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showingAbout) {
             AboutView()
+        }
+        .sheet(isPresented: $showingAppGuide) {  // ADDED THIS SHEET
+            AppGuideView()
         }
         .sheet(isPresented: $showingImagePicker) {
             BackgroundImagePicker { image in
@@ -404,6 +426,7 @@ struct BackgroundImagePicker: UIViewControllerRepresentable {
     }
 }
 
+// MARK: - About View
 struct AboutView: View {
     @AppStorage("showEnglish") var showEnglish = false
     @Environment(\.dismiss) var dismiss
@@ -448,6 +471,171 @@ struct AboutView: View {
                         dismiss()
                     }
                 }
+            }
+        }
+    }
+}
+
+// MARK: - App Guide View
+struct AppGuideView: View {
+    @AppStorage("showEnglish") var showEnglish = false
+    @Environment(\.dismiss) var dismiss
+    
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.white
+                    .ignoresSafeArea(.all, edges: .top)
+                
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 24) {
+                        // Header
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(showEnglish ? "How to Use Golden Gai Hopper" : "ゴールデン街ホッパーの使い方")
+                                .font(.largeTitle)
+                                .bold()
+                                .foregroundColor(.primary)
+                            
+                            Text(showEnglish ?
+                                "Discover and track your Golden Gai bar-hopping adventures!" :
+                                "ゴールデン街のバーホッピングを記録・発見しよう！")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.top)
+                        
+                        // Main Features
+                        VStack(alignment: .leading, spacing: 20) {
+                            featureSection(
+                                icon: "camera.fill",
+                                color: .blue,
+                                title: showEnglish ? "Take Photos & Upload" : "写真を撮影・アップロード",
+                                description: showEnglish ?
+                                    "Tap on any bar card to open its details. Use the 'Add Photo' button to take a picture or choose from your library. Your photos are saved locally and displayed on the bar cards." :
+                                    "バーカードをタップして詳細を開きます。「写真を追加」ボタンで写真を撮影するか、ライブラリから選択できます。写真はローカルに保存され、カードに表示されます。"
+                            )
+                            
+                            featureSection(
+                                icon: "checkmark.circle.fill",
+                                color: .green,
+                                title: showEnglish ? "Mark as Visited" : "訪問済みにする",
+                                description: showEnglish ?
+                                    "Toggle the 'Visited' switch in the bar details. Visited bars appear with a green badge and are automatically added to your Visited Bars list and highlighted on the map." :
+                                    "バー詳細画面で「訪問済み」をオンにします。訪問済みバーは緑色のバッジが表示され、訪問済みバーリストとマップに自動的に反映されます。"
+                            )
+                            
+                            featureSection(
+                                icon: "list.bullet",
+                                color: .orange,
+                                title: showEnglish ? "View in List & Map" : "リストとマップで確認",
+                                description: showEnglish ?
+                                    "Check the 'List' tab to see all your visited bars. Use the 'Map' tab to visualize bar locations and see which ones you've already explored in Golden Gai." :
+                                    "「リスト」タブで訪問済みバーを確認できます。「マップ」タブでバーの位置を視覚化し、ゴールデン街でどこを訪れたかチェックできます。"
+                            )
+                            
+                            featureSection(
+                                icon: "text.bubble.fill",
+                                color: .purple,
+                                title: showEnglish ? "Add Comments" : "コメントを追加",
+                                description: showEnglish ?
+                                    "Write notes about your experience in the 'Notes' section. Tap the 'Save' button to save your comments. Your notes will appear as a preview on the bar cards, helping you remember great experiences!" :
+                                    "「メモ」セクションで体験についての記録を残せます。「保存」ボタンをタップしてコメントを保存。メモはカードにプレビュー表示され、良い体験を思い出すのに役立ちます！"
+                            )
+                        }
+                        
+                        Divider()
+                            .padding(.vertical, 8)
+                        
+                        // Current Status
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Image(systemName: "iphone")
+                                    .foregroundColor(.blue)
+                                Text(showEnglish ? "Local Storage Only" : "ローカル保存のみ")
+                                    .font(.headline)
+                            }
+                            
+                            Text(showEnglish ?
+                                "Currently, all your data (photos, visited bars, and comments) is stored locally on your device. Your information is private and secure." :
+                                "現在、すべてのデータ（写真、訪問済みバー、コメント）はデバイスにローカル保存されます。情報はプライベートで安全です。")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding()
+                        .background(Color.blue.opacity(0.1))
+                        .cornerRadius(12)
+                        
+                        // Future Features
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Image(systemName: "cloud.fill")
+                                    .foregroundColor(.green)
+                                Text(showEnglish ? "Coming Soon" : "今後の予定")
+                                    .font(.headline)
+                            }
+                            
+                            Text(showEnglish ?
+                                "We're planning to add cloud storage and comment sharing features in future updates. You'll be able to share your experiences with other Golden Gai explorers!" :
+                                "今後のアップデートでクラウド保存とコメント共有機能を追加予定です。他のゴールデン街探検者と体験を共有できるようになります！")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding()
+                        .background(Color.green.opacity(0.1))
+                        .cornerRadius(12)
+                        
+                        // Feedback
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Image(systemName: "envelope.fill")
+                                    .foregroundColor(.orange)
+                                Text(showEnglish ? "Send Feedback" : "フィードバック送信")
+                                    .font(.headline)
+                            }
+                            
+                            Text(showEnglish ?
+                                "Have suggestions or ideas for new features? We'd love to hear from you! Your feedback helps us improve the app for everyone. Contact us through the App Store or our support channels." :
+                                "新機能のアイデアやご提案はありますか？ぜひお聞かせください！皆様のフィードバックがアプリの改善に役立ちます。App Storeまたはサポートチャンネルからご連絡ください。")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding()
+                        .background(Color.orange.opacity(0.1))
+                        .cornerRadius(12)
+                        
+                        Spacer(minLength: 50)
+                    }
+                    .padding()
+                }
+            }
+            .navigationTitle(showEnglish ? "App Guide" : "アプリガイド")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(showEnglish ? "Done" : "完了") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+    
+    private func featureSection(icon: String, color: Color, title: String, description: String) -> some View {
+        HStack(alignment: .top, spacing: 16) {
+            Image(systemName: icon)
+                .font(.system(size: 28))
+                .foregroundColor(color)
+                .frame(width: 40)
+            
+            VStack(alignment: .leading, spacing: 8) {
+                Text(title)
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                
+                Text(description)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
     }
