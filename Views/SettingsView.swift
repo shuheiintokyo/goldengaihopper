@@ -4,6 +4,7 @@ import CoreData
 struct SettingsView: View {
     @AppStorage("showEnglish") var showEnglish = false
     @AppStorage("isLoggedIn") var isLoggedIn = false
+    @AppStorage("enableLiquidGlass") var enableLiquidGlass = false
     @State private var showingLogoutAlert = false
     @State private var showingAbout = false
     @State private var showingUpdateAlert = false
@@ -12,11 +13,11 @@ struct SettingsView: View {
     @State private var showingImagePicker = false
     @State private var selectedViewForBackground = ""
     @State private var showingBackgroundAlert = false
+    @State private var showLiquidGlassInfo = false
     @Environment(\.managedObjectContext) private var viewContext
     
     var body: some View {
         ZStack {
-            // Clean white background
             Color.white
                 .ignoresSafeArea(.all, edges: .top)
             
@@ -36,9 +37,35 @@ struct SettingsView: View {
                 }
                 .listRowBackground(Color.gray.opacity(0.1))
                 
+                // Visual Effects Section
+                Section(header: Text(showEnglish ? "Visual Effects" : "視覚効果")) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(showEnglish ? "Liquid Glass Mode" : "リキッドグラスモード")
+                                .foregroundColor(.primary)
+                            Text(showEnglish ? "iOS 26.0+ required" : "iOS 26.0以上が必要")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Spacer()
+                        
+                        Toggle("", isOn: $enableLiquidGlass)
+                            .tint(.blue)
+                        
+                        Button(action: {
+                            showLiquidGlassInfo = true
+                        }) {
+                            Image(systemName: "info.circle")
+                                .foregroundColor(.blue)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .listRowBackground(Color.gray.opacity(0.1))
+                
                 // Background Customization Section
                 Section(header: Text(showEnglish ? "Background Images" : "背景画像")) {
-                    // Content View Background
                     Button(action: {
                         selectedViewForBackground = "ContentView"
                         showingBackgroundAlert = true
@@ -59,7 +86,6 @@ struct SettingsView: View {
                         }
                     }
                     
-                    // Bar List View Background
                     Button(action: {
                         selectedViewForBackground = "BarListView"
                         showingBackgroundAlert = true
@@ -80,7 +106,6 @@ struct SettingsView: View {
                         }
                     }
                     
-                    // Reset all backgrounds button
                     Button(action: {
                         resetAllBackgrounds()
                     }) {
@@ -141,7 +166,7 @@ struct SettingsView: View {
                     HStack {
                         Text(showEnglish ? "App Version" : "アプリバージョン")
                         Spacer()
-                        Text("1.0.0")
+                        Text("1.2")
                             .foregroundColor(.secondary)
                     }
                     
@@ -204,6 +229,13 @@ struct SettingsView: View {
         } message: {
             Text(updateMessage)
         }
+        .alert(showEnglish ? "Liquid Glass Mode" : "リキッドグラスモード", isPresented: $showLiquidGlassInfo) {
+            Button("OK") {}
+        } message: {
+            Text(showEnglish ?
+                "Liquid Glass Mode adds a beautiful glass effect to bar cards. This feature requires iOS 26.0 or later. On older versions, the standard gradient will be used." :
+                "リキッドグラスモードはバーカードに美しいガラス効果を追加します。この機能にはiOS 26.0以降が必要です。古いバージョンでは標準グラデーションが使用されます。")
+        }
         .alert(showEnglish ? "Choose Background" : "背景を選択", isPresented: $showingBackgroundAlert) {
             Button(showEnglish ? "Default Background" : "デフォルト背景") {
                 resetToDefaultBackground()
@@ -233,7 +265,6 @@ struct SettingsView: View {
         isCheckingUpdate = true
         updateMessage = ""
         
-        // For now, just simulate a check
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             isCheckingUpdate = false
             updateMessage = showEnglish ? "No updates available" : "利用可能な更新はありません"
@@ -242,7 +273,7 @@ struct SettingsView: View {
     }
     
     private func getCurrentVersion() -> String {
-        return "1.0"
+        return "1.2"
     }
     
     private func getLastUpdateDate() -> String {
@@ -282,7 +313,6 @@ struct SettingsView: View {
         let key = selectedViewForBackground == "ContentView" ? "contentBackgroundImage" : "barListBackgroundImage"
         UserDefaults.standard.removeObject(forKey: key)
         
-        // Send notification to update the view
         NotificationCenter.default.post(
             name: NSNotification.Name("BackgroundImageChanged"),
             object: nil,
@@ -298,7 +328,6 @@ struct SettingsView: View {
         UserDefaults.standard.removeObject(forKey: "contentBackgroundImage")
         UserDefaults.standard.removeObject(forKey: "barListBackgroundImage")
         
-        // Send notifications for both views
         NotificationCenter.default.post(
             name: NSNotification.Name("BackgroundImageChanged"),
             object: nil,
@@ -324,7 +353,6 @@ struct SettingsView: View {
         let key = selectedViewForBackground == "ContentView" ? "contentBackgroundImage" : "barListBackgroundImage"
         UserDefaults.standard.set(imageData, forKey: key)
         
-        // Send notification to update the view
         NotificationCenter.default.post(
             name: NSNotification.Name("BackgroundImageChanged"),
             object: nil,
@@ -337,7 +365,7 @@ struct SettingsView: View {
     }
 }
 
-// MARK: - Background Image Picker (renamed from SimpleImagePicker to avoid conflict)
+// MARK: - Background Image Picker
 struct BackgroundImagePicker: UIViewControllerRepresentable {
     let onImageSelected: (UIImage) -> Void
     @Environment(\.dismiss) private var dismiss
@@ -383,7 +411,6 @@ struct AboutView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                // Clean white background to match SettingsView
                 Color.white
                     .ignoresSafeArea(.all, edges: .top)
                 
@@ -401,7 +428,7 @@ struct AboutView: View {
                             .foregroundColor(.secondary)
                         
                         VStack(alignment: .leading, spacing: 10) {
-                            Label(showEnglish ? "Version 1.0.0" : "バージョン 1.0.0", systemImage: "info.circle")
+                            Label(showEnglish ? "Version 1.2" : "バージョン 1.2", systemImage: "info.circle")
                             Label(showEnglish ? "© 2025 Golden Gai Hopper" : "© 2025 ゴールデン街ホッパー", systemImage: "c.circle")
                             Label(showEnglish ? "All rights reserved" : "無断転載を禁じます", systemImage: "lock.circle")
                         }

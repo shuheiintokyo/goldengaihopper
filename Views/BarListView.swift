@@ -23,12 +23,8 @@ struct BarListView: View {
     
     var body: some View {
         ZStack(alignment: .top) {
-            // Custom background image that user can control
             DynamicBackgroundImage(viewName: "BarListView", defaultImageName: "BarListBackground")
                 .ignoresSafeArea()
-            
-            // REMOVED the extra dark overlay that was making it darker than other views
-            // Color.black.opacity(0.4) was here - this was causing the darkness
             
             Group {
                 if visitedBars.isEmpty && !showingAllBars {

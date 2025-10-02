@@ -12,6 +12,10 @@ struct ContentView: View {
     @Environment(\.colorScheme) private var colorScheme
     @AppStorage("showEnglish") var showEnglish = false
     
+    // Shuffled bars - populated once when data loads
+    @State private var shuffledBars: [Bar] = []
+    @State private var isDataReady = false
+    
     var body: some View {
         TabView(selection: $selection) {
             // Home tab with horizontal scrolling cards
@@ -20,9 +24,6 @@ struct ContentView: View {
                     // Custom background image that user can control
                     DynamicBackgroundImage(viewName: "ContentView", defaultImageName: "ContentBackground")
                         .ignoresSafeArea()
-                    
-                    // REMOVED the extra overlay that was making it darker
-                    // Color.black.opacity(0.3) was here
                     
                     VStack(spacing: 0) {
                         // Title - Adaptive for iPad/iPhone
@@ -35,39 +36,50 @@ struct ContentView: View {
                             .padding(.bottom, isIPad ? 30 : 20)
                         
                         // Scrolling cards with PEEK effect - Adaptive for iPad/iPhone
-                        GeometryReader { geometry in
-                            let isIPad = UIDevice.current.userInterfaceIdiom == .pad
-                            let cardWidth = isIPad ?
-                                min(geometry.size.width * 0.45, 400) : // iPad: smaller percentage or max 400pt
-                                geometry.size.width * 0.78 // iPhone: 78% of screen
-                            let cardHeight: CGFloat = isIPad ? 550 : 450
-                            let horizontalPadding: CGFloat = isIPad ? 40 : 20
-                            let cardSpacing: CGFloat = isIPad ? 25 : 15
-                            
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                LazyHStack(spacing: cardSpacing) {
-                                    ForEach(bars.indices, id: \.self) { index in
-                                        let bar = bars[index]
-                                        BarCardView(bar: bar, isIPad: isIPad)
-                                            .frame(width: cardWidth)
-                                            .frame(height: cardHeight)
-                                            .onTapGesture {
-                                                selectedBar = bar
-                                            }
-                                            .scrollTransition { content, phase in
-                                                content
-                                                    .opacity(phase.isIdentity ? 1.0 : 0.6)
-                                                    .scaleEffect(phase.isIdentity ? 1.0 : 0.9)
-                                                    .offset(y: phase.isIdentity ? 0 : 15)
-                                                    .blur(radius: phase.isIdentity ? 0 : 1)
-                                            }
+                        if isDataReady {
+                            GeometryReader { geometry in
+                                let isIPad = UIDevice.current.userInterfaceIdiom == .pad
+                                let cardWidth = isIPad ?
+                                    min(geometry.size.width * 0.45, 400) :
+                                    geometry.size.width * 0.78
+                                let cardHeight: CGFloat = isIPad ? 550 : 450
+                                let horizontalPadding: CGFloat = isIPad ? 40 : 20
+                                let cardSpacing: CGFloat = isIPad ? 25 : 15
+                                
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    LazyHStack(spacing: cardSpacing) {
+                                        ForEach(shuffledBars, id: \.uuid) { bar in
+                                            BarCardView(bar: bar, isIPad: isIPad)
+                                                .frame(width: cardWidth)
+                                                .frame(height: cardHeight)
+                                                .onTapGesture {
+                                                    selectedBar = bar
+                                                }
+                                                .scrollTransition { content, phase in
+                                                    content
+                                                        .opacity(phase.isIdentity ? 1.0 : 0.6)
+                                                        .scaleEffect(phase.isIdentity ? 1.0 : 0.9)
+                                                        .offset(y: phase.isIdentity ? 0 : 15)
+                                                        .blur(radius: phase.isIdentity ? 0 : 1)
+                                                }
+                                        }
                                     }
+                                    .scrollTargetLayout()
+                                    .padding(.horizontal, horizontalPadding)
                                 }
-                                .scrollTargetLayout()
-                                .padding(.horizontal, horizontalPadding)
+                                .scrollTargetBehavior(.viewAligned)
+                                .scrollIndicators(.hidden)
                             }
-                            .scrollTargetBehavior(.viewAligned)
-                            .scrollIndicators(.hidden)
+                        } else {
+                            // Loading indicator while data is being shuffled
+                            VStack {
+                                ProgressView()
+                                    .scaleEffect(1.5)
+                                    .tint(.white)
+                                Text(showEnglish ? "Loading..." : "読み込み中...")
+                                    .foregroundColor(.white)
+                                    .padding(.top, 20)
+                            }
                         }
                         
                         Spacer()
@@ -101,7 +113,7 @@ struct ContentView: View {
             }
             .tag(2)
             
-            // Search tab - Now a regular view
+            // Search tab
             NavigationStack {
                 BarSearchView(bars: Array(bars), showEnglish: showEnglish) { selectedBar in
                     self.selectedBar = selectedBar
@@ -124,6 +136,24 @@ struct ContentView: View {
         .onAppear {
             setupModernTabBarAppearance()
             setupNotifications()
+            
+            // Initial shuffle
+            print("📊 OnAppear - Bars count: \(bars.count)")
+            if bars.count > 0 && shuffledBars.isEmpty {
+                print("🎲 Shuffling \(bars.count) bars...")
+                shuffledBars = Array(bars).shuffled()
+                isDataReady = true
+                print("✅ Cards ready! isDataReady = \(isDataReady)")
+            }
+        }
+        .onChange(of: bars.count) { oldCount, newCount in
+            print("🔄 Bars count changed: \(oldCount) → \(newCount)")
+            if newCount > 0 && shuffledBars.isEmpty {
+                print("🎲 Shuffling \(newCount) bars...")
+                shuffledBars = Array(bars).shuffled()
+                isDataReady = true
+                print("✅ Cards ready! isDataReady = \(isDataReady)")
+            }
         }
         .sheet(item: $selectedBar) { bar in
             NavigationStack {
@@ -136,36 +166,29 @@ struct ContentView: View {
         let tabBarAppearance = UITabBarAppearance()
         tabBarAppearance.configureWithOpaqueBackground()
         
-        // Modern blur effect with lighter appearance
         tabBarAppearance.backgroundEffect = UIBlurEffect(style: .systemChromeMaterial)
         tabBarAppearance.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.8)
         
-        // Modern tab colors
         let normalColor = UIColor.label.withAlphaComponent(0.6)
         let selectedColor = UIColor.systemBlue
         
-        // Configure normal state
         tabBarAppearance.stackedLayoutAppearance.normal.iconColor = normalColor
         tabBarAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [
             .foregroundColor: normalColor,
             .font: UIFont.systemFont(ofSize: 10, weight: .medium)
         ]
         
-        // Configure selected state
         tabBarAppearance.stackedLayoutAppearance.selected.iconColor = selectedColor
         tabBarAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [
             .foregroundColor: selectedColor,
             .font: UIFont.systemFont(ofSize: 10, weight: .semibold)
         ]
         
-        // Add subtle selected indicator background
         tabBarAppearance.selectionIndicatorTintColor = selectedColor.withAlphaComponent(0.1)
         
-        // Apply the appearance
         UITabBar.appearance().standardAppearance = tabBarAppearance
         UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
         
-        // Remove top border for cleaner look
         UITabBar.appearance().shadowImage = UIImage()
         UITabBar.appearance().backgroundImage = UIImage()
     }
@@ -184,7 +207,7 @@ struct ContentView: View {
     }
 }
 
-// MARK: - Search View (Now a full view, not a sheet)
+// MARK: - Search View
 struct BarSearchView: View {
     let bars: [Bar]
     let showEnglish: Bool
@@ -213,12 +236,10 @@ struct BarSearchView: View {
     
     var body: some View {
         ZStack {
-            // Consistent background with other views
             Color(UIColor.systemBackground)
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Header
                 VStack(spacing: 16) {
                     Text(showEnglish ? "Search Bars" : "バー検索")
                         .font(.largeTitle)
@@ -283,10 +304,6 @@ struct BarSearchView: View {
                         getBarDisplayName(for: bar))
                         .font(.headline)
                         .foregroundColor(.primary)
-                    
-                    Text("Row \(bar.locationRow), Col \(bar.locationColumn)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
                 }
                 
                 Spacer()

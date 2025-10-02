@@ -7,6 +7,7 @@ struct BarCardView: View {
     
     @State private var refreshID = UUID()
     @State private var imageUpdateSubscription: AnyCancellable?
+    @AppStorage("enableLiquidGlass") var enableLiquidGlass = false
     
     // Get English translation if available
     private var englishName: String? {
@@ -16,6 +17,14 @@ struct BarCardView: View {
             return nil
         }
         return translation
+    }
+    
+    // Get comment preview (first 20 characters)
+    private var commentPreview: String? {
+        guard let notes = bar.notes, !notes.isEmpty else {
+            return nil
+        }
+        return String(notes.prefix(20))
     }
     
     // Generate unique gradient color based on bar name
@@ -62,6 +71,10 @@ struct BarCardView: View {
         isIPad ? 18 : 15
     }
     
+    private var commentFontSize: CGFloat {
+        isIPad ? 14 : 12
+    }
+    
     private var badgeFontSize: CGFloat {
         isIPad ? 14 : 12
     }
@@ -72,13 +85,25 @@ struct BarCardView: View {
     
     var body: some View {
         ZStack {
-            // Clean card background with properly rendered border
-            RoundedRectangle(cornerRadius: isIPad ? 24 : 20)
-                .fill(uniqueColor)
-                .overlay(
-                    RoundedRectangle(cornerRadius: isIPad ? 24 : 20)
-                        .stroke(Color.white.opacity(0.2), lineWidth: isIPad ? 1.5 : 1)
-                )
+            // Card background with Liquid Glass or standard gradient
+            if #available(iOS 26.0, *), enableLiquidGlass {
+                // Liquid Glass effect for iOS 26+
+                RoundedRectangle(cornerRadius: isIPad ? 24 : 20)
+                    .fill(uniqueColor)
+                    .glassEffect(in: .rect(cornerRadius: isIPad ? 24 : 20))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: isIPad ? 24 : 20)
+                            .stroke(Color.white.opacity(0.3), lineWidth: isIPad ? 1.5 : 1)
+                    )
+            } else {
+                // Standard gradient for older iOS or when disabled
+                RoundedRectangle(cornerRadius: isIPad ? 24 : 20)
+                    .fill(uniqueColor)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: isIPad ? 24 : 20)
+                            .stroke(Color.white.opacity(0.2), lineWidth: isIPad ? 1.5 : 1)
+                    )
+            }
             
             // Main content layout
             VStack(spacing: 0) {
@@ -97,7 +122,7 @@ struct BarCardView: View {
                                     .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
                             )
                         
-                        // Image on top (if available) - fills the entire frame
+                        // Image on top (if available)
                         if let uuid = bar.uuid, let image = ImageManager.loadImage(for: uuid) {
                             Image(uiImage: image)
                                 .resizable()
@@ -116,7 +141,7 @@ struct BarCardView: View {
                 Spacer()
                     .frame(height: imageSectionSpacing)
                 
-                // Text section - consistent styling regardless of image presence
+                // Text section
                 VStack(spacing: isIPad ? 14 : 12) {
                     // Main bar name
                     Text(bar.name ?? "Unknown")
@@ -132,6 +157,26 @@ struct BarCardView: View {
                             .foregroundColor(.white.opacity(0.9))
                             .multilineTextAlignment(.center)
                             .lineLimit(1)
+                    }
+                    
+                    // Comment preview (if available) - below bar name and translation
+                    if let preview = commentPreview {
+                        HStack {
+                            Spacer()
+                            Text(preview + (bar.notes?.count ?? 0 > 20 ? "..." : ""))
+                                .font(.system(size: commentFontSize, weight: .medium))
+                                .foregroundColor(.white.opacity(0.7))
+                                .italic()
+                                .lineLimit(1)
+                                .padding(.horizontal, isIPad ? 16 : 12)
+                                .padding(.vertical, isIPad ? 8 : 6)
+                                .background(
+                                    Capsule()
+                                        .fill(Color.black.opacity(0.2))
+                                )
+                            Spacer()
+                        }
+                        .padding(.top, isIPad ? 6 : 4)
                     }
                     
                     // Visited status badge
@@ -162,7 +207,6 @@ struct BarCardView: View {
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: isIPad ? 24 : 20))
-        // Listen for image update notifications
         .onAppear {
             imageUpdateSubscription = NotificationCenter.default.publisher(
                 for: NSNotification.Name("ImageUpdated")

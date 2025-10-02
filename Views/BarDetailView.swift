@@ -8,20 +8,21 @@ struct BarDetailView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.dismiss) var dismiss
     @AppStorage("showEnglish") var showEnglish = false
+    @AppStorage("enableLiquidGlass") var enableLiquidGlass = false
     
     @State private var showingImagePicker = false
     @State private var showingCamera = false
-    @State private var showingImageSourceAlert = false  // NEW: Alert to choose source
+    @State private var showingImageSourceAlert = false
     @State private var inputImage: UIImage?
     @State private var refreshID = UUID()
     @State private var showingDeleteAlert = false
     @State private var showingMap = false
     @State private var notes: String = ""
+    @State private var hasUnsavedChanges = false
+    @State private var showSaveConfirmation = false
     
-    // Callback to dismiss the sheet from ContentView
     var onImageUploaded: (() -> Void)?
     
-    // Get English translation if available
     private var englishName: String? {
         guard let japaneseName = bar.name,
               let translation = BarNameTranslation.nameMap[japaneseName],
@@ -36,7 +37,7 @@ struct BarDetailView: View {
             VStack(spacing: 20) {
                 headerSection
                 imageSection
-                addPhotoButton  // This now shows options
+                addPhotoButton
                 statusSection
                 mapButton
                 notesSection
@@ -91,6 +92,8 @@ struct BarDetailView: View {
         }
         .onAppear {
             notes = bar.notes ?? ""
+            hasUnsavedChanges = false
+            showSaveConfirmation = false
             setupImageUpdateListener()
         }
     }
@@ -137,6 +140,17 @@ struct BarDetailView: View {
                                 .foregroundColor(.gray)
                         }
                     )
+                    .overlay(
+                        Group {
+                            if #available(iOS 26.0, *), enableLiquidGlass {
+                                RoundedRectangle(cornerRadius: 16)
+                                    .strokeBorder(Color.gray.opacity(0.3), lineWidth: 1)
+                                    .glassEffect(in: .rect(cornerRadius: 16))
+                            } else {
+                                EmptyView()
+                            }
+                        }
+                    )
             }
         }
         .padding(.horizontal)
@@ -144,7 +158,7 @@ struct BarDetailView: View {
     
     private var addPhotoButton: some View {
         Button(action: {
-            showingImageSourceAlert = true  // Show options instead of directly opening picker
+            showingImageSourceAlert = true
         }) {
             HStack {
                 Image(systemName: "camera.fill")
@@ -152,7 +166,17 @@ struct BarDetailView: View {
             }
             .frame(maxWidth: .infinity)
             .padding()
-            .background(Color.blue)
+            .background(
+                Group {
+                    if #available(iOS 26.0, *), enableLiquidGlass {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.blue)
+                            .glassEffect(in: .rect(cornerRadius: 12))
+                    } else {
+                        Color.blue
+                    }
+                }
+            )
             .foregroundColor(.white)
             .clipShape(RoundedRectangle(cornerRadius: 12))
         }
@@ -184,7 +208,18 @@ struct BarDetailView: View {
             .tint(.green)
         }
         .padding()
-        .background(Color(UIColor.secondarySystemBackground))
+        .background(
+            Group {
+                if #available(iOS 26.0, *), enableLiquidGlass {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color(UIColor.secondarySystemBackground))
+                        .glassEffect(in: .rect(cornerRadius: 12))
+                } else {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color(UIColor.secondarySystemBackground))
+                }
+            }
+        )
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .padding(.horizontal)
     }
@@ -201,7 +236,18 @@ struct BarDetailView: View {
                     .font(.caption)
             }
             .padding()
-            .background(Color(UIColor.secondarySystemBackground))
+            .background(
+                Group {
+                    if #available(iOS 26.0, *), enableLiquidGlass {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color(UIColor.secondarySystemBackground))
+                            .glassEffect(in: .rect(cornerRadius: 12))
+                    } else {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color(UIColor.secondarySystemBackground))
+                    }
+                }
+            )
             .clipShape(RoundedRectangle(cornerRadius: 12))
         }
         .padding(.horizontal)
@@ -209,8 +255,41 @@ struct BarDetailView: View {
     
     private var notesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(showEnglish ? "Notes" : "メモ")
-                .font(.headline)
+            HStack {
+                Text(showEnglish ? "Notes" : "メモ")
+                    .font(.headline)
+                
+                Spacer()
+                
+                // Save button - only show when there are unsaved changes
+                if hasUnsavedChanges {
+                    Button(action: saveNotes) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 16))
+                            Text(showEnglish ? "Save" : "保存")
+                                .font(.system(size: 14, weight: .semibold))
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color.blue)
+                        .clipShape(Capsule())
+                    }
+                }
+                
+                // Saved confirmation indicator
+                if showSaveConfirmation {
+                    HStack(spacing: 4) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 14))
+                        Text(showEnglish ? "Saved" : "保存済み")
+                            .font(.system(size: 12, weight: .medium))
+                    }
+                    .foregroundColor(.green)
+                    .transition(.opacity)
+                }
+            }
             
             TextEditor(text: $notes)
                 .frame(minHeight: 100)
@@ -218,12 +297,24 @@ struct BarDetailView: View {
                 .background(Color(UIColor.tertiarySystemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .onChange(of: notes) { oldValue, newValue in
-                    bar.notes = newValue
-                    try? viewContext.save()
+                    // Mark as having unsaved changes
+                    hasUnsavedChanges = (newValue != (bar.notes ?? ""))
+                    showSaveConfirmation = false
                 }
         }
         .padding()
-        .background(Color(UIColor.secondarySystemBackground))
+        .background(
+            Group {
+                if #available(iOS 26.0, *), enableLiquidGlass {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color(UIColor.secondarySystemBackground))
+                        .glassEffect(in: .rect(cornerRadius: 12))
+                } else {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color(UIColor.secondarySystemBackground))
+                }
+            }
+        )
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .padding(.horizontal)
     }
@@ -250,12 +341,34 @@ struct BarDetailView: View {
     
     // MARK: - Helper Methods
     
+    private func saveNotes() {
+        bar.notes = notes
+        try? viewContext.save()
+        
+        // Notify that bar data has updated (for card view refresh)
+        NotificationCenter.default.post(
+            name: NSNotification.Name("BarDataUpdated"),
+            object: nil,
+            userInfo: ["barUUID": bar.uuid ?? ""]
+        )
+        
+        // Update UI state
+        hasUnsavedChanges = false
+        showSaveConfirmation = true
+        
+        // Hide confirmation after 2 seconds
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            withAnimation {
+                showSaveConfirmation = false
+            }
+        }
+    }
+    
     private func saveImage(_ image: UIImage) {
         guard let uuid = bar.uuid else { return }
         
         ImageManager.saveImage(image, for: uuid)
         
-        // Automatically mark as visited when photo is added
         if !bar.isVisited {
             bar.isVisited = true
             try? viewContext.save()
@@ -270,7 +383,6 @@ struct BarDetailView: View {
         refreshID = UUID()
         inputImage = nil
         
-        // Auto-dismiss the sheet after successful image upload
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             dismiss()
         }
@@ -308,7 +420,7 @@ struct BarDetailView: View {
     }
 }
 
-// MARK: - Universal Image Picker (Camera + Photo Library)
+// MARK: - Universal Image Picker
 struct ImagePickerView: UIViewControllerRepresentable {
     @Binding var image: UIImage?
     @Environment(\.dismiss) private var dismiss
@@ -321,7 +433,6 @@ struct ImagePickerView: UIViewControllerRepresentable {
         picker.sourceType = sourceType
         picker.allowsEditing = true
         
-        // Check camera availability
         if sourceType == .camera && !UIImagePickerController.isSourceTypeAvailable(.camera) {
             print("⚠️ Camera not available on this device")
         }
@@ -343,10 +454,8 @@ struct ImagePickerView: UIViewControllerRepresentable {
         }
         
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            // Dismiss first
             parent.dismiss()
             
-            // Then process the image
             if let editedImage = info[.editedImage] as? UIImage {
                 parent.image = editedImage
             } else if let originalImage = info[.originalImage] as? UIImage {
