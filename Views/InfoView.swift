@@ -211,62 +211,16 @@ struct InfoView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                // Background color to fill any gaps
-                Color.black
-                    .ignoresSafeArea(.all)
-                
+                // Background - extends to top
                 Image("InfoBackground")
                     .resizable()
                     .scaledToFill()
                     .frame(width: geometry.size.width, height: geometry.size.height)
                     .clipped()
-                    .ignoresSafeArea(.all)
+                    .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
-                    HStack(spacing: 8) {
-
-                        Text(showEnglish ? "Guide Info" : "Guide Info")
-                            .font(.title)
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.7)
-                        
-                        Spacer()
-                        
-                        Menu {
-                            ForEach(InfoLanguage.allCases, id: \.self) { language in
-                                Button(action: {
-                                    selectedLanguage = language
-                                }) {
-                                    HStack {
-                                        Text(language.flag)
-                                        Text(language.rawValue)
-                                        if selectedLanguage == language {
-                                            Image(systemName: "checkmark")
-                                        }
-                                    }
-                                }
-                            }
-                        } label: {
-                            HStack(spacing: 4) {
-                                Text(selectedLanguage.flag)
-                                Image(systemName: "globe")
-                                    .foregroundColor(.white)
-                                Image(systemName: "chevron.down")
-                                    .font(.caption)
-                                    .foregroundColor(.white)
-                            }
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 7)
-                            .background(Color.blue)
-                            .cornerRadius(8)
-                        }
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .background(Color.black.opacity(0.3))
-                    
+                    // FAQ Content - starts from top
                     ScrollView {
                         VStack(spacing: 12) {
                             ForEach(faqItems) { item in
@@ -286,20 +240,59 @@ struct InfoView: View {
                                 )
                             }
                             
-                            // Add spacer at bottom to push content up and fill space
                             Spacer(minLength: 100)
                         }
                         .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
+                        .padding(.top, 60)
+                        .padding(.bottom, 12)
                     }
                 }
-                .frame(width: geometry.size.width, height: geometry.size.height)
+                
+                // Language button at bottom right
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        
+                        Menu {
+                            ForEach(InfoLanguage.allCases, id: \.self) { language in
+                                Button(action: {
+                                    selectedLanguage = language
+                                }) {
+                                    HStack {
+                                        Text(language.flag)
+                                        Text(language.rawValue)
+                                        if selectedLanguage == language {
+                                            Image(systemName: "checkmark")
+                                        }
+                                    }
+                                }
+                            }
+                        } label: {
+                            ZStack {
+                                // Circular outline
+                                Circle()
+                                    .strokeBorder(Color.white.opacity(0.6), lineWidth: 2)
+                                    .background(
+                                        Circle()
+                                            .fill(Color.white.opacity(0.15))
+                                    )
+                                    .frame(width: 44, height: 44)
+                                
+                                // Flag in center
+                                Text(selectedLanguage.flag)
+                                    .font(.system(size: 24))
+                            }
+                        }
+                        .padding(.trailing, 16)
+                        .padding(.bottom, 100)
+                    }
+                }
             }
         }
         .navigationTitle("")
         .navigationBarHidden(true)
-        .background(Color.black)
-        .ignoresSafeArea(.all)
+        .ignoresSafeArea()
         .onAppear {
             selectedLanguage = showEnglish ? .english : .japanese
         }

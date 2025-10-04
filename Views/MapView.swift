@@ -30,21 +30,27 @@ struct MapView: View {
             DynamicBackgroundImage(viewName: "MapView", defaultImageName: "BarMapBackground")
                 .ignoresSafeArea()
             
-            VStack {
-                // Language toggle button
-                Button(action: {
-                    showEnglish.toggle()
-                }) {
-                    HStack {
-                        Image(systemName: "globe")
-                        Text(showEnglish ? "Switch to Japanese" : "Switch to English")
+            VStack(spacing: 0) {
+                // Language toggle button only - no title
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        showEnglish.toggle()
+                    }) {
+                        HStack {
+                            Image(systemName: "globe")
+                            Text(showEnglish ? "日本語" : "English")
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
                     }
-                    .padding(8)
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
+                    .padding(.top, 50)
+                    .padding(.trailing, 16)
                 }
-                .padding(.top, 8)
+                .padding(.bottom, 8)
                 
                 GeometryReader { geometry in
                     ScrollView([.horizontal, .vertical], showsIndicators: true) {
@@ -98,7 +104,8 @@ struct MapView: View {
                 }
             }
         }
-        .navigationTitle(showEnglish ? "Golden Gai Map" : "ゴールデン街マップ")
+        .navigationTitle("")
+        .navigationBarHidden(true)
         .navigationDestination(for: Bar.self) { bar in
             BarDetailView(bar: bar)
         }

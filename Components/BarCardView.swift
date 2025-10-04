@@ -8,6 +8,7 @@ struct BarCardView: View {
     @State private var refreshID = UUID()
     @State private var imageUpdateSubscription: AnyCancellable?
     @AppStorage("enableLiquidGlass") var enableLiquidGlass = false
+    @AppStorage("showEnglish") var showEnglish = false
     
     // Get English translation if available
     private var englishName: String? {
@@ -17,6 +18,15 @@ struct BarCardView: View {
             return nil
         }
         return translation
+    }
+    
+    // Get display name based on language setting
+    private var displayName: String {
+        if showEnglish {
+            return englishName ?? bar.name ?? "Unknown"
+        } else {
+            return bar.name ?? "Unknown"
+        }
     }
     
     // Get comment preview (first 20 characters)
@@ -65,10 +75,6 @@ struct BarCardView: View {
     
     private var titleFontSize: CGFloat {
         isIPad ? 28 : 22
-    }
-    
-    private var subtitleFontSize: CGFloat {
-        isIPad ? 18 : 15
     }
     
     private var commentFontSize: CGFloat {
@@ -146,23 +152,14 @@ struct BarCardView: View {
                 
                 // Text section
                 VStack(spacing: isIPad ? 14 : 12) {
-                    // Main bar name
-                    Text(bar.name ?? "Unknown")
+                    // Display name based on language setting
+                    Text(displayName)
                         .font(.system(size: titleFontSize, weight: .bold))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                         .lineLimit(isIPad ? 2 : 1)
                     
-                    // English translation if available
-                    if let englishName = englishName {
-                        Text(englishName)
-                            .font(.system(size: subtitleFontSize, weight: .medium))
-                            .foregroundColor(.white.opacity(0.9))
-                            .multilineTextAlignment(.center)
-                            .lineLimit(1)
-                    }
-                    
-                    // Comment preview (if available) - below bar name and translation
+                    // Comment preview (if available) - below bar name
                     if let preview = commentPreview {
                         HStack {
                             Spacer()
