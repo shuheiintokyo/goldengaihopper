@@ -22,6 +22,8 @@ extension Bar {
     @NSManaged public var name: String?
     @NSManaged public var notes: String?
     @NSManaged public var uuid: String?
+    @NSManaged public var cellSpanHorizontal: Int16
+    @NSManaged public var cellSpanVertical: Int16
 
 }
 

@@ -89,13 +89,16 @@ struct ContentView: View {
                 .navigationDestination(for: Bar.self) { bar in
                     BarDetailView(bar: bar)
                 }
+                .onAppear {
+                    reinforceTabBarAppearance()
+                }
             }
             .tabItem {
                 Label(showEnglish ? "Home" : "ホーム", systemImage: "house.fill")
             }
             .tag(0)
             
-            // List tab
+            // List tab (now with integrated search)
             NavigationStack {
                 BarListView()
             }
@@ -113,14 +116,12 @@ struct ContentView: View {
             }
             .tag(2)
             
-            // Search tab
+            // Info tab
             NavigationStack {
-                BarSearchView(bars: Array(bars), showEnglish: showEnglish) { selectedBar in
-                    self.selectedBar = selectedBar
-                }
+                InfoView()
             }
             .tabItem {
-                Label(showEnglish ? "Search" : "検索", systemImage: "magnifyingglass")
+                Label(showEnglish ? "Info" : "情報", systemImage: "info.circle.fill")
             }
             .tag(3)
             
@@ -134,8 +135,8 @@ struct ContentView: View {
             .tag(4)
         }
         .onAppear {
-            setupModernTabBarAppearance()
             setupNotifications()
+            reinforceTabBarAppearance()
             
             // Initial shuffle
             print("📊 OnAppear - Bars count: \(bars.count)")
@@ -147,7 +148,7 @@ struct ContentView: View {
             }
         }
         .onChange(of: bars.count) { oldCount, newCount in
-            print("🔄 Bars count changed: \(oldCount) → \(newCount)")
+            print("📄 Bars count changed: \(oldCount) → \(newCount)")
             if newCount > 0 && shuffledBars.isEmpty {
                 print("🎲 Shuffling \(newCount) bars...")
                 shuffledBars = Array(bars).shuffled()
@@ -155,42 +156,15 @@ struct ContentView: View {
                 print("✅ Cards ready! isDataReady = \(isDataReady)")
             }
         }
+        .onChange(of: selection) { oldValue, newValue in
+            // Reinforce tab bar appearance whenever tab changes
+            reinforceTabBarAppearance()
+        }
         .sheet(item: $selectedBar) { bar in
             NavigationStack {
                 BarDetailView(bar: bar)
             }
         }
-    }
-    
-    private func setupModernTabBarAppearance() {
-        let tabBarAppearance = UITabBarAppearance()
-        tabBarAppearance.configureWithOpaqueBackground()
-        
-        tabBarAppearance.backgroundEffect = UIBlurEffect(style: .systemChromeMaterial)
-        tabBarAppearance.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.8)
-        
-        let normalColor = UIColor.label.withAlphaComponent(0.6)
-        let selectedColor = UIColor.systemBlue
-        
-        tabBarAppearance.stackedLayoutAppearance.normal.iconColor = normalColor
-        tabBarAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [
-            .foregroundColor: normalColor,
-            .font: UIFont.systemFont(ofSize: 10, weight: .medium)
-        ]
-        
-        tabBarAppearance.stackedLayoutAppearance.selected.iconColor = selectedColor
-        tabBarAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [
-            .foregroundColor: selectedColor,
-            .font: UIFont.systemFont(ofSize: 10, weight: .semibold)
-        ]
-        
-        tabBarAppearance.selectionIndicatorTintColor = selectedColor.withAlphaComponent(0.1)
-        
-        UITabBar.appearance().standardAppearance = tabBarAppearance
-        UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
-        
-        UITabBar.appearance().shadowImage = UIImage()
-        UITabBar.appearance().backgroundImage = UIImage()
     }
     
     private func setupNotifications() {
@@ -201,125 +175,42 @@ struct ContentView: View {
         ) { notification in
             if let uuid = notification.userInfo?["barUUID"] as? String,
                bars.first(where: { $0.uuid == uuid }) != nil {
-                selection = 2
+                selection = 2  // Switch to Map tab
             }
         }
     }
-}
-
-// MARK: - Search View
-struct BarSearchView: View {
-    let bars: [Bar]
-    let showEnglish: Bool
-    let onSelectBar: (Bar) -> Void
     
-    @State private var searchText = ""
-    
-    var filteredBars: [Bar] {
-        if searchText.isEmpty {
-            return bars
-        }
+    private func reinforceTabBarAppearance() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = UIColor.black.withAlphaComponent(0.85)
+        appearance.backgroundEffect = UIBlurEffect(style: .dark)
         
-        return bars.filter { bar in
-            let barName = getBarDisplayName(for: bar)
-            return barName.localizedCaseInsensitiveContains(searchText)
-        }
-    }
-    
-    private func getBarDisplayName(for bar: Bar) -> String {
-        let defaultName = bar.name ?? ""
-        if showEnglish {
-            return BarNameTranslation.nameMap[defaultName] ?? defaultName
-        }
-        return defaultName
-    }
-    
-    var body: some View {
-        ZStack {
-            Color(UIColor.systemBackground)
-                .ignoresSafeArea()
-            
-            VStack(spacing: 0) {
-                VStack(spacing: 16) {
-                    Text(showEnglish ? "Search Bars" : "バー検索")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    searchBarView
-                }
-                .padding()
-                .background(Color(UIColor.secondarySystemBackground))
-                
-                resultsListView
-            }
-        }
-        .navigationBarHidden(true)
-    }
-    
-    private var searchBarView: some View {
-        HStack {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(.secondary)
-            
-            TextField(
-                showEnglish ? "Search bars..." : "バーを検索...",
-                text: $searchText
-            )
-            .textFieldStyle(.plain)
-            
-            if !searchText.isEmpty {
-                Button(action: { searchText = "" }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.secondary)
+        let normalColor = UIColor.white.withAlphaComponent(0.6)
+        let selectedColor = UIColor.systemBlue
+        
+        appearance.stackedLayoutAppearance.normal.iconColor = normalColor
+        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: normalColor]
+        appearance.stackedLayoutAppearance.selected.iconColor = selectedColor
+        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: selectedColor]
+        
+        appearance.inlineLayoutAppearance.normal.iconColor = normalColor
+        appearance.inlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: normalColor]
+        appearance.inlineLayoutAppearance.selected.iconColor = selectedColor
+        appearance.inlineLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: selectedColor]
+        
+        appearance.compactInlineLayoutAppearance.normal.iconColor = normalColor
+        appearance.compactInlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: normalColor]
+        appearance.compactInlineLayoutAppearance.selected.iconColor = selectedColor
+        appearance.compactInlineLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: selectedColor]
+        
+        DispatchQueue.main.async {
+            UIApplication.shared.windows.forEach { window in
+                window.allSubviews.compactMap { $0 as? UITabBar }.forEach { tabBar in
+                    tabBar.standardAppearance = appearance
+                    tabBar.scrollEdgeAppearance = appearance
                 }
             }
         }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color(UIColor.systemBackground))
-        )
-    }
-    
-    private var resultsListView: some View {
-        ScrollView {
-            LazyVStack(spacing: 1) {
-                ForEach(filteredBars, id: \.uuid) { bar in
-                    searchResultRow(for: bar)
-                }
-            }
-            .padding(.top, 1)
-        }
-    }
-    
-    private func searchResultRow(for bar: Bar) -> some View {
-        Button(action: {
-            onSelectBar(bar)
-        }) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(getBarDisplayName(for: bar).isEmpty ?
-                        (showEnglish ? "Unknown" : "不明") :
-                        getBarDisplayName(for: bar))
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                }
-                
-                Spacer()
-                
-                if bar.isVisited {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
-                }
-                
-                Image(systemName: "chevron.right")
-                    .foregroundColor(.secondary)
-                    .font(.caption)
-            }
-            .padding()
-            .background(Color(UIColor.secondarySystemBackground))
-        }
-        .padding(.horizontal)
     }
 }

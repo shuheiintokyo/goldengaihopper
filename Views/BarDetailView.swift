@@ -9,6 +9,7 @@ struct BarDetailView: View {
     @Environment(\.dismiss) var dismiss
     @AppStorage("showEnglish") var showEnglish = false
     @AppStorage("enableLiquidGlass") var enableLiquidGlass = false
+    @AppStorage("pendingBarHighlight") private var pendingBarHighlight: String = ""
     
     @State private var showingImagePicker = false
     @State private var showingCamera = false
@@ -16,7 +17,6 @@ struct BarDetailView: View {
     @State private var inputImage: UIImage?
     @State private var refreshID = UUID()
     @State private var showingDeleteAlert = false
-    @State private var showingMap = false
     @State private var notes: String = ""
     @State private var hasUnsavedChanges = false
     @State private var showSaveConfirmation = false
@@ -52,11 +52,6 @@ struct BarDetailView: View {
         }
         .sheet(isPresented: $showingCamera) {
             ImagePickerView(image: $inputImage, sourceType: .camera)
-        }
-        .sheet(isPresented: $showingMap) {
-            if let location = getBarLocation() {
-                MapDetailView(location: location, barName: bar.name ?? "Unknown")
-            }
         }
         .alert(showEnglish ? "Delete Photo?" : "写真を削除しますか？", isPresented: $showingDeleteAlert) {
             Button(showEnglish ? "Cancel" : "キャンセル", role: .cancel) { }
@@ -226,7 +221,22 @@ struct BarDetailView: View {
     
     private var mapButton: some View {
         Button(action: {
-            showingMap = true
+            if let uuid = bar.uuid {
+                print("🔵 Setting pending highlight: \(uuid)")
+                
+                // Set the pending highlight using @AppStorage (reactive)
+                pendingBarHighlight = uuid
+                
+                // Also post notification for cases where MapView is already loaded
+                NotificationCenter.default.post(
+                    name: NSNotification.Name("HighlightBar"),
+                    object: nil,
+                    userInfo: ["barUUID": uuid]
+                )
+                
+                // Dismiss to return to main view
+                dismiss()
+            }
         }) {
             HStack {
                 Image(systemName: "map")
@@ -414,10 +424,6 @@ struct BarDetailView: View {
             }
         }
     }
-    
-    private func getBarLocation() -> CLLocationCoordinate2D? {
-        return CLLocationCoordinate2D(latitude: 35.6938, longitude: 139.7034)
-    }
 }
 
 // MARK: - Universal Image Picker
@@ -465,34 +471,6 @@ struct ImagePickerView: UIViewControllerRepresentable {
         
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
             parent.dismiss()
-        }
-    }
-}
-
-// MARK: - Map Detail View
-struct MapDetailView: View {
-    let location: CLLocationCoordinate2D
-    let barName: String
-    @Environment(\.dismiss) var dismiss
-    @AppStorage("showEnglish") var showEnglish = false
-    
-    var body: some View {
-        NavigationStack {
-            Map(position: .constant(.region(MKCoordinateRegion(
-                center: location,
-                span: MKCoordinateSpan(latitudeDelta: 0.002, longitudeDelta: 0.002)
-            )))) {
-                Marker(barName, coordinate: location)
-            }
-            .navigationTitle(barName)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(showEnglish ? "Close" : "閉じる") {
-                        dismiss()
-                    }
-                }
-            }
         }
     }
 }

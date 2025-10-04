@@ -2,7 +2,6 @@
 struct BarNameTranslation {
     static let nameMap: [String: String] = [
         // Row 0
-        "住宅": "Residence",
         "流民": "Ryumin",
         "シーホース": "Seahorse",
         "FUJISAN": "FUJISAN",
@@ -43,7 +42,7 @@ struct BarNameTranslation {
         // Row 6
         "Smile(2F)": "Smile(2F)",
         "ビッグリバー": "Big River",
-        "現在地": "Current Location",
+        "現在地": "Genzai-chi",
         "翁": "Okina",
         "red.": "Red.",
         "紅孔雀": "Beni Kujaku",
@@ -111,7 +110,7 @@ struct BarNameTranslation {
         "Grey": "Grey",
         "かおり・・": "Kaori..",
         "追い風": "Tailwind",
-        "松鐘亭": "Shoshoutei",
+        "CONTONTON": "Shoshoutei",
         "ワンモアー": "One More",
         "dragon-i": "Dragon-i",
         "チリチリナイン": "Chiri Chiri Nine",
@@ -352,7 +351,7 @@ struct BarNameTranslation {
         "Diamond bar": "Diamond Bar",
         "三坪±": "San-tsubo±",
         "エクリプス": "Eclipse",
-        "プッシーフット": "Pussyfoot",
+        "BAR M": "BAR M",
         "突風": "Toppu",
         "SUZU BAR": "SUZU BAR",
         "しん亭こう路": "Shintei Koji",

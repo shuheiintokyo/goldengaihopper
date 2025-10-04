@@ -7,7 +7,7 @@ struct SettingsView: View {
     @AppStorage("enableLiquidGlass") var enableLiquidGlass = false
     @State private var showingLogoutAlert = false
     @State private var showingAbout = false
-    @State private var showingAppGuide = false  // Added this missing state variable
+    @State private var showingAppGuide = false
     @State private var showingUpdateAlert = false
     @State private var updateMessage = ""
     @State private var isCheckingUpdate = false
@@ -17,220 +17,33 @@ struct SettingsView: View {
     @State private var showLiquidGlassInfo = false
     @Environment(\.managedObjectContext) private var viewContext
     
+    // Computed property for display name
+    private var selectedViewDisplayName: String {
+        switch selectedViewForBackground {
+        case "ContentView":
+            return showEnglish ? "Home Page" : "ホームページ"
+        case "BarListView":
+            return showEnglish ? "Bar List" : "バーリスト"
+        case "MapView":
+            return showEnglish ? "Map" : "マップ"
+        default:
+            return ""
+        }
+    }
+    
     var body: some View {
         ZStack {
             Color.white
                 .ignoresSafeArea(.all, edges: .top)
             
             List {
-                // Language Settings Section
-                Section(header: Text(showEnglish ? "Language" : "言語設定")) {
-                    HStack {
-                        Text(showEnglish ? "Language" : "言語")
-                        Spacer()
-                        Picker("", selection: $showEnglish) {
-                            Text("日本語").tag(false)
-                            Text("English").tag(true)
-                        }
-                        .pickerStyle(SegmentedPickerStyle())
-                        .frame(width: 150)
-                    }
-                }
-                .listRowBackground(Color.gray.opacity(0.1))
-                
-                // Visual Effects Section
-                Section(header: Text(showEnglish ? "Visual Effects" : "視覚効果")) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(showEnglish ? "Liquid Glass Mode" : "リキッドグラスモード")
-                                .foregroundColor(.primary)
-                            Text(showEnglish ? "iOS 26.0+ required" : "iOS 26.0以上が必要")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        Spacer()
-                        
-                        Toggle("", isOn: $enableLiquidGlass)
-                            .tint(.blue)
-                        
-                        Button(action: {
-                            showLiquidGlassInfo = true
-                        }) {
-                            Image(systemName: "info.circle")
-                                .foregroundColor(.blue)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .listRowBackground(Color.gray.opacity(0.1))
-                
-                // Background Customization Section
-                Section(header: Text(showEnglish ? "Background Images" : "背景画像")) {
-                    Button(action: {
-                        selectedViewForBackground = "ContentView"
-                        showingBackgroundAlert = true
-                    }) {
-                        HStack {
-                            Image(systemName: "photo")
-                                .foregroundColor(.blue)
-                            VStack(alignment: .leading) {
-                                Text(showEnglish ? "Home Page Background" : "ホームページ背景")
-                                    .foregroundColor(.primary)
-                                Text(showEnglish ? "Tap to change home screen background" : "ホーム画面の背景を変更")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    
-                    Button(action: {
-                        selectedViewForBackground = "BarListView"
-                        showingBackgroundAlert = true
-                    }) {
-                        HStack {
-                            Image(systemName: "list.bullet.rectangle")
-                                .foregroundColor(.green)
-                            VStack(alignment: .leading) {
-                                Text(showEnglish ? "Bar List Background" : "バーリスト背景")
-                                    .foregroundColor(.primary)
-                                Text(showEnglish ? "Tap to change bar list background" : "バーリスト画面の背景を変更")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    
-                    Button(action: {
-                        resetAllBackgrounds()
-                    }) {
-                        HStack {
-                            Image(systemName: "arrow.clockwise")
-                                .foregroundColor(.orange)
-                            Text(showEnglish ? "Reset All Backgrounds" : "全ての背景をリセット")
-                                .foregroundColor(.orange)
-                        }
-                    }
-                }
-                .listRowBackground(Color.gray.opacity(0.1))
-                
-                // Data Updates Section
-                Section(header: Text(showEnglish ? "Data Updates" : "データ更新")) {
-                    HStack {
-                        Text(showEnglish ? "Current Version" : "現在のバージョン")
-                        Spacer()
-                        Text(getCurrentVersion())
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    HStack {
-                        Text(showEnglish ? "Last Updated" : "最終更新")
-                        Spacer()
-                        Text(formatUpdateDate(getLastUpdateDate()))
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    Button(action: {
-                        checkForUpdates()
-                    }) {
-                        HStack {
-                            if isCheckingUpdate {
-                                ProgressView()
-                                    .scaleEffect(0.8)
-                                    .padding(.trailing, 5)
-                            } else {
-                                Image(systemName: "arrow.clockwise")
-                            }
-                            Text(showEnglish ? "Check for Updates" : "更新を確認")
-                            Spacer()
-                        }
-                        .foregroundColor(.primary)
-                    }
-                    .disabled(isCheckingUpdate)
-                    
-                    if !updateMessage.isEmpty {
-                        Text(updateMessage)
-                            .font(.caption)
-                            .foregroundColor(.green)
-                    }
-                }
-                .listRowBackground(Color.gray.opacity(0.1))
-                
-                // App Information Section
-                Section(header: Text(showEnglish ? "Information" : "情報")) {
-                    HStack {
-                        Text(showEnglish ? "App Version" : "アプリバージョン")
-                        Spacer()
-                        Text("1.2")
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    HStack {
-                        Text(showEnglish ? "Total Bars" : "バー総数")
-                        Spacer()
-                        Text("\(getBarCount())")
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    HStack {
-                        Text(showEnglish ? "Visited Bars" : "訪問済み")
-                        Spacer()
-                        Text("\(getVisitedCount())")
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    Button(action: {
-                        showingAbout = true
-                    }) {
-                        HStack {
-                            Text(showEnglish ? "About This App" : "このアプリについて")
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.secondary)
-                        }
-                        .foregroundColor(.primary)
-                    }
-                }
-                .listRowBackground(Color.gray.opacity(0.1))
-                
-                // How to Use Section - ADDED THIS SECTION
-                Section(header: Text(showEnglish ? "How to Use" : "使い方ガイド")) {
-                    Button(action: {
-                        showingAppGuide = true
-                    }) {
-                        HStack {
-                            Image(systemName: "questionmark.circle")
-                                .foregroundColor(.blue)
-                            Text(showEnglish ? "App Guide" : "アプリガイド")
-                                .foregroundColor(.primary)
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                }
-                .listRowBackground(Color.gray.opacity(0.1))
-                
-                // Account Section
-                Section {
-                    Button(action: {
-                        showingLogoutAlert = true
-                    }) {
-                        HStack {
-                            Image(systemName: "rectangle.portrait.and.arrow.right")
-                                .foregroundColor(.red)
-                            Text(showEnglish ? "Log Out" : "ログアウト")
-                                .foregroundColor(.red)
-                        }
-                    }
-                }
-                .listRowBackground(Color.gray.opacity(0.1))
+                languageSection
+                visualEffectsSection
+                backgroundSection
+                dataUpdatesSection
+                appInformationSection
+                howToUseSection
+                accountSection
             }
             .scrollContentBackground(.hidden)
             .navigationTitle(showEnglish ? "Settings" : "設定")
@@ -264,15 +77,12 @@ struct SettingsView: View {
             }
             Button(showEnglish ? "Cancel" : "キャンセル", role: .cancel) {}
         } message: {
-            let viewDisplayName = selectedViewForBackground == "ContentView" ?
-                (showEnglish ? "Home Page" : "ホームページ") :
-                (showEnglish ? "Bar List" : "バーリスト")
-            Text(showEnglish ? "Choose background for \(viewDisplayName)" : "\(viewDisplayName)の背景を選択してください")
+            Text(showEnglish ? "Choose background for \(selectedViewDisplayName)" : "\(selectedViewDisplayName)の背景を選択してください")
         }
         .sheet(isPresented: $showingAbout) {
             AboutView()
         }
-        .sheet(isPresented: $showingAppGuide) {  // ADDED THIS SHEET
+        .sheet(isPresented: $showingAppGuide) {
             AppGuideView()
         }
         .sheet(isPresented: $showingImagePicker) {
@@ -280,6 +90,221 @@ struct SettingsView: View {
                 saveCustomBackground(image: image)
             }
         }
+    }
+    
+    // MARK: - View Sections
+    
+    private var languageSection: some View {
+        Section(header: Text(showEnglish ? "Language" : "言語設定")) {
+            HStack {
+                Text(showEnglish ? "Language" : "言語")
+                Spacer()
+                Picker("", selection: $showEnglish) {
+                    Text("日本語").tag(false)
+                    Text("English").tag(true)
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .frame(width: 150)
+            }
+        }
+        .listRowBackground(Color.gray.opacity(0.1))
+    }
+    
+    private var visualEffectsSection: some View {
+        Section(header: Text(showEnglish ? "Visual Effects" : "視覚効果")) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(showEnglish ? "Liquid Glass Mode" : "リキッドグラスモード")
+                        .foregroundColor(.primary)
+                    Text(showEnglish ? "iOS 26.0+ required" : "iOS 26.0以上が必要")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+                
+                Toggle("", isOn: $enableLiquidGlass)
+                    .tint(.blue)
+                
+                Button(action: {
+                    showLiquidGlassInfo = true
+                }) {
+                    Image(systemName: "info.circle")
+                        .foregroundColor(.blue)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .listRowBackground(Color.gray.opacity(0.1))
+    }
+    
+    private var backgroundSection: some View {
+        Section(header: Text(showEnglish ? "Background Images" : "背景画像")) {
+            BackgroundSettingRow(
+                icon: "photo",
+                color: .blue,
+                title: showEnglish ? "Home Page Background" : "ホームページ背景",
+                subtitle: showEnglish ? "Tap to change home screen background" : "ホーム画面の背景を変更",
+                action: {
+                    selectedViewForBackground = "ContentView"
+                    showingBackgroundAlert = true
+                }
+            )
+            
+            BackgroundSettingRow(
+                icon: "list.bullet.rectangle",
+                color: .green,
+                title: showEnglish ? "Bar List Background" : "バーリスト背景",
+                subtitle: showEnglish ? "Tap to change bar list background" : "バーリスト画面の背景を変更",
+                action: {
+                    selectedViewForBackground = "BarListView"
+                    showingBackgroundAlert = true
+                }
+            )
+            
+            BackgroundSettingRow(
+                icon: "map",
+                color: .purple,
+                title: showEnglish ? "Map Background" : "マップ背景",
+                subtitle: showEnglish ? "Tap to change map background" : "マップ画面の背景を変更",
+                action: {
+                    selectedViewForBackground = "MapView"
+                    showingBackgroundAlert = true
+                }
+            )
+            
+            resetBackgroundsButton
+        }
+        .listRowBackground(Color.gray.opacity(0.1))
+    }
+    
+    private var resetBackgroundsButton: some View {
+        Button(action: {
+            resetAllBackgrounds()
+        }) {
+            HStack {
+                Image(systemName: "arrow.clockwise")
+                    .foregroundColor(.orange)
+                Text(showEnglish ? "Reset All Backgrounds" : "全ての背景をリセット")
+                    .foregroundColor(.orange)
+            }
+        }
+    }
+    
+    private var dataUpdatesSection: some View {
+        Section(header: Text(showEnglish ? "Data Updates" : "データ更新")) {
+            HStack {
+                Text(showEnglish ? "Current Version" : "現在のバージョン")
+                Spacer()
+                Text(getCurrentVersion())
+                    .foregroundColor(.secondary)
+            }
+            
+            HStack {
+                Text(showEnglish ? "Last Updated" : "最終更新")
+                Spacer()
+                Text(formatUpdateDate(getLastUpdateDate()))
+                    .foregroundColor(.secondary)
+            }
+            
+            Button(action: {
+                checkForUpdates()
+            }) {
+                HStack {
+                    if isCheckingUpdate {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                            .padding(.trailing, 5)
+                    } else {
+                        Image(systemName: "arrow.clockwise")
+                    }
+                    Text(showEnglish ? "Check for Updates" : "更新を確認")
+                    Spacer()
+                }
+                .foregroundColor(.primary)
+            }
+            .disabled(isCheckingUpdate)
+            
+            if !updateMessage.isEmpty {
+                Text(updateMessage)
+                    .font(.caption)
+                    .foregroundColor(.green)
+            }
+        }
+        .listRowBackground(Color.gray.opacity(0.1))
+    }
+    
+    private var appInformationSection: some View {
+        Section(header: Text(showEnglish ? "Information" : "情報")) {
+            HStack {
+                Text(showEnglish ? "App Version" : "アプリバージョン")
+                Spacer()
+                Text("1.2")
+                    .foregroundColor(.secondary)
+            }
+            
+            HStack {
+                Text(showEnglish ? "Total Bars" : "バー総数")
+                Spacer()
+                Text("\(getBarCount())")
+                    .foregroundColor(.secondary)
+            }
+            
+            HStack {
+                Text(showEnglish ? "Visited Bars" : "訪問済み")
+                Spacer()
+                Text("\(getVisitedCount())")
+                    .foregroundColor(.secondary)
+            }
+            
+            Button(action: {
+                showingAbout = true
+            }) {
+                HStack {
+                    Text(showEnglish ? "About This App" : "このアプリについて")
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(.secondary)
+                }
+                .foregroundColor(.primary)
+            }
+        }
+        .listRowBackground(Color.gray.opacity(0.1))
+    }
+    
+    private var howToUseSection: some View {
+        Section(header: Text(showEnglish ? "How to Use" : "使い方ガイド")) {
+            Button(action: {
+                showingAppGuide = true
+            }) {
+                HStack {
+                    Image(systemName: "questionmark.circle")
+                        .foregroundColor(.blue)
+                    Text(showEnglish ? "App Guide" : "アプリガイド")
+                        .foregroundColor(.primary)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        .listRowBackground(Color.gray.opacity(0.1))
+    }
+    
+    private var accountSection: some View {
+        Section {
+            Button(action: {
+                showingLogoutAlert = true
+            }) {
+                HStack {
+                    Image(systemName: "rectangle.portrait.and.arrow.right")
+                        .foregroundColor(.red)
+                    Text(showEnglish ? "Log Out" : "ログアウト")
+                        .foregroundColor(.red)
+                }
+            }
+        }
+        .listRowBackground(Color.gray.opacity(0.1))
     }
     
     // MARK: - Update Functions
@@ -332,7 +357,18 @@ struct SettingsView: View {
     
     // MARK: - Background Management Functions
     private func resetToDefaultBackground() {
-        let key = selectedViewForBackground == "ContentView" ? "contentBackgroundImage" : "barListBackgroundImage"
+        let key: String
+        switch selectedViewForBackground {
+        case "ContentView":
+            key = "contentBackgroundImage"
+        case "BarListView":
+            key = "barListBackgroundImage"
+        case "MapView":
+            key = "mapBackgroundImage"
+        default:
+            return
+        }
+        
         UserDefaults.standard.removeObject(forKey: key)
         
         NotificationCenter.default.post(
@@ -349,6 +385,7 @@ struct SettingsView: View {
     private func resetAllBackgrounds() {
         UserDefaults.standard.removeObject(forKey: "contentBackgroundImage")
         UserDefaults.standard.removeObject(forKey: "barListBackgroundImage")
+        UserDefaults.standard.removeObject(forKey: "mapBackgroundImage")
         
         NotificationCenter.default.post(
             name: NSNotification.Name("BackgroundImageChanged"),
@@ -359,6 +396,11 @@ struct SettingsView: View {
             name: NSNotification.Name("BackgroundImageChanged"),
             object: nil,
             userInfo: ["viewName": "BarListView"]
+        )
+        NotificationCenter.default.post(
+            name: NSNotification.Name("BackgroundImageChanged"),
+            object: nil,
+            userInfo: ["viewName": "MapView"]
         )
         
         let message = showEnglish ? "All backgrounds reset to default" : "すべての背景をデフォルトにリセットしました"
@@ -372,7 +414,18 @@ struct SettingsView: View {
             return
         }
         
-        let key = selectedViewForBackground == "ContentView" ? "contentBackgroundImage" : "barListBackgroundImage"
+        let key: String
+        switch selectedViewForBackground {
+        case "ContentView":
+            key = "contentBackgroundImage"
+        case "BarListView":
+            key = "barListBackgroundImage"
+        case "MapView":
+            key = "mapBackgroundImage"
+        default:
+            return
+        }
+        
         UserDefaults.standard.set(imageData, forKey: key)
         
         NotificationCenter.default.post(
@@ -471,6 +524,34 @@ struct AboutView: View {
                         dismiss()
                     }
                 }
+            }
+        }
+    }
+}
+
+// MARK: - Background Setting Row Helper
+struct BackgroundSettingRow: View {
+    let icon: String
+    let color: Color
+    let title: String
+    let subtitle: String
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack {
+                Image(systemName: icon)
+                    .foregroundColor(color)
+                VStack(alignment: .leading) {
+                    Text(title)
+                        .foregroundColor(.primary)
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.secondary)
             }
         }
     }
