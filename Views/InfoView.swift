@@ -211,23 +211,28 @@ struct InfoView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                // Fixed background image
+                // Background color to fill any gaps
+                Color.black
+                    .ignoresSafeArea(.all)
+                
                 Image("InfoBackground")
                     .resizable()
                     .scaledToFill()
-                    .ignoresSafeArea()
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+                    .clipped()
+                    .ignoresSafeArea(.all)
                 
                 VStack(spacing: 0) {
-                    // Header with language switcher
-                    HStack {
+                    HStack(spacing: 8) {
                         Text(showEnglish ? "Guide Info" : "Guide Info")
                             .font(.title)
                             .fontWeight(.bold)
                             .foregroundColor(.white)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
                         
                         Spacer()
                         
-                        // Language picker
                         Menu {
                             ForEach(InfoLanguage.allCases, id: \.self) { language in
                                 Button(action: {
@@ -243,25 +248,24 @@ struct InfoView: View {
                                 }
                             }
                         } label: {
-                            HStack(spacing: 6) {
+                            HStack(spacing: 4) {
                                 Text(selectedLanguage.flag)
-                                    .font(.title3)
                                 Image(systemName: "globe")
                                     .foregroundColor(.white)
                                 Image(systemName: "chevron.down")
                                     .font(.caption)
                                     .foregroundColor(.white)
                             }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 7)
                             .background(Color.blue)
                             .cornerRadius(8)
                         }
                     }
-                    .padding()
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
                     .background(Color.black.opacity(0.3))
                     
-                    // FAQ List
                     ScrollView {
                         VStack(spacing: 12) {
                             ForEach(faqItems) { item in
@@ -269,7 +273,6 @@ struct InfoView: View {
                                     item: item,
                                     language: selectedLanguage,
                                     isExpanded: expandedItems.contains(item.id),
-                                    maxWidth: geometry.size.width - 32,
                                     onTap: {
                                         withAnimation(.spring(response: 0.3)) {
                                             if expandedItems.contains(item.id) {
@@ -281,17 +284,23 @@ struct InfoView: View {
                                     }
                                 )
                             }
+                            
+                            // Add spacer at bottom to push content up and fill space
+                            Spacer(minLength: 100)
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)
                     }
                 }
+                .frame(width: geometry.size.width, height: geometry.size.height)
             }
-            .navigationTitle("")
-            .navigationBarHidden(true)
-            .onAppear {
-                selectedLanguage = showEnglish ? .english : .japanese
-            }
+        }
+        .navigationTitle("")
+        .navigationBarHidden(true)
+        .background(Color.black)
+        .ignoresSafeArea(.all)
+        .onAppear {
+            selectedLanguage = showEnglish ? .english : .japanese
         }
     }
 }
@@ -300,12 +309,10 @@ struct FAQRowView: View {
     let item: FAQItem
     let language: InfoLanguage
     let isExpanded: Bool
-    let maxWidth: CGFloat
     let onTap: () -> Void
     
     var body: some View {
         VStack(spacing: 0) {
-            // Question bar
             Button(action: onTap) {
                 HStack(spacing: 12) {
                     Text(item.question[language] ?? "")
@@ -314,22 +321,20 @@ struct FAQRowView: View {
                         .multilineTextAlignment(.leading)
                         .lineLimit(nil)
                         .fixedSize(horizontal: false, vertical: true)
-                    
-                    Spacer(minLength: 4)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                         .foregroundColor(.white)
                         .font(.system(size: 14, weight: .bold))
+                        .frame(width: 20)
                 }
                 .padding(.horizontal, 14)
                 .padding(.vertical, 14)
-                .frame(maxWidth: maxWidth)
                 .background(Color.blue.opacity(0.8))
                 .cornerRadius(10)
             }
             .buttonStyle(PlainButtonStyle())
             
-            // Answer (expandable)
             if isExpanded {
                 Text(item.answer[language] ?? "")
                     .font(.system(size: 15))
@@ -337,8 +342,8 @@ struct FAQRowView: View {
                     .multilineTextAlignment(.leading)
                     .lineLimit(nil)
                     .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(14)
-                    .frame(maxWidth: maxWidth, alignment: .leading)
                     .background(Color.black.opacity(0.6))
                     .cornerRadius(10)
                     .padding(.top, 4)

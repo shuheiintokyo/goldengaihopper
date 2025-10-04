@@ -1,4 +1,4 @@
-// MapView.swift - Simple Merged Cells with Centered Names
+// MapView.swift - Fixed vacant placeholder handling
 import SwiftUI
 import CoreData
 
@@ -18,6 +18,12 @@ struct MapView: View {
     @State private var scrollProxy: ScrollViewProxy?
     
     private let cellSize: CGFloat = 80
+    
+    // Helper function to check if a bar is a vacant placeholder
+    private func isVacantPlaceholder(_ bar: Bar) -> Bool {
+        guard let name = bar.name else { return false }
+        return name == "*" || name == "_VACANT_" || name == "---"
+    }
     
     var body: some View {
         ZStack {
@@ -171,10 +177,13 @@ struct MapView: View {
             }
     }
     
-    // MARK: - Cell View with Simple Merged Cell Logic
+    // MARK: - Cell View with Vacant Placeholder Handling
     private func cellView(for row: Int, column: Int) -> some View {
         // Find bar at this exact position
         let bar = findBar(at: row, column: column)
+        
+        // Check if this is a vacant placeholder
+        let isVacant = bar != nil && isVacantPlaceholder(bar!)
         
         // Check if this cell is occupied by a merged bar from a different position
         if bar == nil {
@@ -193,7 +202,7 @@ struct MapView: View {
         
         // IMPORTANT: Frame size stays at cellSize to maintain grid alignment
         // The content will extend beyond using overlay
-        let bgColor = cellBackgroundColor(for: bar)
+        let bgColor = cellBackgroundColor(for: bar, isVacant: isVacant)
         
         return AnyView(
             ZStack {
@@ -213,26 +222,29 @@ struct MapView: View {
                             )
                         
                         // Bar name - centered in the merged cell area
-                        if showEnglish {
-                            ZStack {
-                                Rectangle()
-                                    .fill(Color.black.opacity(0.3))
-                                    .cornerRadius(4)
-                                
-                                Text(BarNameTranslation.nameMap[bar.name ?? ""] ?? bar.name ?? "")
-                                    .font(.system(size: 9))
-                                    .foregroundColor(.white)
+                        // FIX: Don't show text for vacant placeholders
+                        if !isVacant {
+                            if showEnglish {
+                                ZStack {
+                                    Rectangle()
+                                        .fill(Color.black.opacity(0.3))
+                                        .cornerRadius(4)
+                                    
+                                    Text(BarNameTranslation.nameMap[bar.name ?? ""] ?? bar.name ?? "")
+                                        .font(.system(size: 9))
+                                        .foregroundColor(.white)
+                                        .multilineTextAlignment(.center)
+                                        .lineLimit(3)
+                                        .padding(3)
+                                }
+                                .padding(3)
+                            } else {
+                                Text(bar.name ?? "")
+                                    .font(.system(size: 10))
                                     .multilineTextAlignment(.center)
-                                    .lineLimit(3)
-                                    .padding(3)
+                                    .lineLimit(Int(vSpan) + 1)
+                                    .padding(2)
                             }
-                            .padding(3)
-                        } else {
-                            Text(bar.name ?? "")
-                                .font(.system(size: 10))
-                                .multilineTextAlignment(.center)
-                                .lineLimit(Int(vSpan) + 1)
-                                .padding(2)
                         }
                     }
                     .frame(width: cellSize * CGFloat(hSpan), height: cellSize * CGFloat(vSpan))
@@ -242,11 +254,17 @@ struct MapView: View {
                     )
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        self.selectedBar = bar
+                        // Don't allow tapping on vacant placeholders
+                        if !isVacant {
+                            self.selectedBar = bar
+                        }
                     }
                     .onLongPressGesture(minimumDuration: 3) {
-                        bar.isVisited = !bar.isVisited
-                        try? viewContext.save()
+                        // Don't allow marking vacant placeholders as visited
+                        if !isVacant {
+                            bar.isVisited = !bar.isVisited
+                            try? viewContext.save()
+                        }
                     }
                 } else {
                     // Empty cell
@@ -259,9 +277,14 @@ struct MapView: View {
         )
     }
     
-    private func cellBackgroundColor(for bar: Bar?) -> Color {
+    private func cellBackgroundColor(for bar: Bar?, isVacant: Bool) -> Color {
         guard let bar = bar else {
             return Color.white.opacity(0.1)
+        }
+        
+        // FIX: Vacant placeholders get light gray background
+        if isVacant {
+            return Color.gray.opacity(0.15)
         }
         
         if bar.isVisited {

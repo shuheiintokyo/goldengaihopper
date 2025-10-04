@@ -130,7 +130,6 @@ struct BarListView: View {
                                 ForEach(displayedBars, id: \.uuid) { bar in
                                     NavigationLink(value: bar) {
                                         BarRowView(bar: bar, showEnglish: showEnglish)
-                                            .frame(maxWidth: .infinity)
                                     }
                                     .listRowBackground(
                                         RoundedRectangle(cornerRadius: 10)
@@ -243,40 +242,45 @@ struct BarRowView: View {
     
     var body: some View {
         HStack(spacing: 12) {
+            // Checkmark icon - fixed width
             Image(systemName: bar.isVisited ? "checkmark.circle.fill" : "circle")
                 .foregroundColor(bar.isVisited ? .green : .white.opacity(0.6))
                 .font(.title2)
                 .frame(width: 24, height: 24)
             
+            // Text content - constrained to available width
             VStack(alignment: .leading, spacing: 4) {
-                HStack {
+                // Bar name - FIX: Added frame with alignment and removed inner HStack
+                Group {
                     if showEnglish {
                         Text(BarNameTranslation.nameMap[bar.name ?? ""] ?? bar.name ?? "Unknown")
                             .font(.system(size: 18, weight: .medium))
-                            .lineLimit(2)
                             .foregroundColor(.white)
-                            .multilineTextAlignment(.leading)
                     } else {
                         Text(bar.name ?? "不明")
                             .font(.system(size: 18, weight: .medium))
-                            .lineLimit(2)
                             .foregroundColor(.white)
-                            .multilineTextAlignment(.leading)
                     }
-                    Spacer()
                 }
+                .lineLimit(2)
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
+                // Notes preview
                 if let notes = bar.notes, !notes.isEmpty {
                     Text(notes)
                         .font(.caption)
                         .foregroundColor(.white.opacity(0.6))
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             
-            Spacer(minLength: 8)
-            
+            // Chevron - fixed width
             Image(systemName: "chevron.right")
                 .foregroundColor(.white.opacity(0.5))
                 .font(.system(size: 14))

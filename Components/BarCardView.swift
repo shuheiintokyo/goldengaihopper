@@ -111,7 +111,7 @@ struct BarCardView: View {
                 Spacer()
                     .frame(height: topBottomSpacing)
                 
-                // Image section - Fixed frame that completely fills with image
+                // Image section - Fixed frame with safe dimensions
                 GeometryReader { geometry in
                     ZStack {
                         // Background placeholder (always present)
@@ -122,15 +122,18 @@ struct BarCardView: View {
                                     .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
                             )
                         
-                        // Image on top (if available)
+                        // Image on top (if available) - FIX: Added safe dimension check
                         if let uuid = bar.uuid, let image = ImageManager.loadImage(for: uuid) {
-                            Image(uiImage: image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: geometry.size.width, height: imageHeight)
-                                .clipped()
-                                .clipShape(RoundedRectangle(cornerRadius: 16))
-                                .id(refreshID)
+                            // FIX: Only render image if geometry has valid dimensions
+                            if geometry.size.width > 0 && imageHeight > 0 {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: max(1, geometry.size.width), height: max(1, imageHeight))
+                                    .clipped()
+                                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                                    .id(refreshID)
+                            }
                         }
                     }
                 }
