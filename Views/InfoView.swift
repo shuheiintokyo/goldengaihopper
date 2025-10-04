@@ -224,6 +224,7 @@ struct InfoView: View {
                 
                 VStack(spacing: 0) {
                     HStack(spacing: 8) {
+
                         Text(showEnglish ? "Guide Info" : "Guide Info")
                             .font(.title)
                             .fontWeight(.bold)
